@@ -1,0 +1,115 @@
+﻿@*
+    (Udemy): 127. Indice de Cuentas - Query
+*@
+
+@model IEnumerable<BudgetAccountIndexViewModel>
+
+@{
+    ViewData["Title"] = "Index Cuentas";
+
+    @* (Udemy): 127. Indice de Cuentas - Query [3:50 mins] *@
+    string BalanceFormat(decimal balance)
+    {
+        return Math.Abs(balance).ToString("N");
+    }
+
+    @* (Udemy): 127. Indice de Cuentas - Query [6:45 mins] *@
+    string GetBalanceType(decimal balance)
+    {
+        return balance >= 0 ? "activos-accordion" : "pasivos-accordion";
+    }
+}
+
+<h1>Cuentas</h1>
+
+<a asp-action="CreateBudgetAccount" class="btn btn-primary">Crear cuenta</a>
+
+<div class="total-div-container mt-3 mb-3">
+    <div class="activos">
+        <div>
+            <strong>Activos</strong>
+        </div>
+        <div>
+            @BalanceFormat(Model.Where(x => x.account_balance > 0).Sum(x => x.account_balance))
+        </div>
+    </div>
+
+    <div class="pasivos">
+        <div>
+            <strong>Pasivos</strong>
+        </div>
+        <div>
+            @BalanceFormat(Model.Where(x => x.account_balance < 0).Sum(x => x.account_balance))
+        </div>
+    </div>
+
+    <div class="total-card">
+        <div >
+            <strong class="total-card-title">Total</strong>
+        </div>
+            <div class="total-card-value total-balance">
+            @BalanceFormat(Model.Sum(x => x.account_balance))
+        </div>
+    </div>
+</div>
+
+@* (Udemy): 127. Indice de Cuentas - Query [4:45 mins] *@
+<div class="accordion accordion-body budgetaccount-accordion">
+    @foreach (var account in Model)
+    {
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="accordionHeader">
+                @{
+                    @* Eliminamos espacios en blanco *@
+                    var id = account.AccountType.Replace(" ", "");
+                    @* Generamos dinámicamente un ID para abrir y cerrar los accordion-items *@
+                    var dataBSTarget = "#" + id;
+                    @* Comparamos para saber si es un "activo, o un pasivo *@
+                    var assetOrLiability = GetBalanceType(account.account_balance);
+                }
+
+                <button class="accordion-button" 
+                type="button"
+                data-bs-toggle="collapse" 
+                data-bs-target="@dataBSTarget">
+                    <span><strong>@account.AccountType</strong></span>
+                    <span class="@assetOrLiability">
+                        @BalanceFormat(account.account_balance)
+                    </span>
+                </button>
+            </h2>
+
+            <div id="@id" class="accordion-collapse collapse show">
+                <div>
+                    <ul class="list-group">
+                        @foreach (var budgetAccount in account.BudgetAccount)
+                        {
+                            var budgetClass = GetBalanceType(budgetAccount.account_balance);
+                            <li class="list-group-item">
+
+                                <span>
+                                    <strong>@budgetAccount.account_name</strong>
+                                    <a class="btn btn-warning" 
+                                    asp-action="EditBudgetAccount"
+                                    asp-route-account_id="@budgetAccount.account_id">
+                                        <i class="bi-pencil-fill"></i>
+                                    </a>
+                                    <a class="btn btn-danger" 
+                                    asp-action="DeleteBudgetAccount"
+                                    asp-route-account_id="@budgetAccount.account_id">
+                                        <i class="bi-trash-fill"></i>
+                                    </a>
+                                </span>
+
+                                <span class="@budgetClass">
+                                    @BalanceFormat(budgetAccount.account_balance)
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>

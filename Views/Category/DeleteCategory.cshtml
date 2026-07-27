@@ -1,0 +1,17 @@
+﻿@*
+    (Udemy): 137. Borrar Categorías
+*@
+
+@model Category
+
+@{
+    ViewData["Title"] = "Borrar Categoría";
+}
+
+<h3 class="mb-3">¿Desea eliminar la cuenta @Model.category_name?</h3>
+<form asp-action="DeleteCategoryConfirmed" id="formDeleteCategory">
+    <input type="hidden" asp-for="category_id" />
+    <button class="btn btn-danger">Eliminar</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+</form>
+

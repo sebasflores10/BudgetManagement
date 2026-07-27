@@ -1,0 +1,45 @@
+﻿/***************************************************** 
+    (Udemy): 129. Aislamiento de CSS
+*****************************************************/
+
+h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #0f172a;
+    padding-left: 16px;
+    border-left: 6px solid #06b6d4;
+    line-height: 1.1;
+    margin-bottom: 35px;
+}
+
+
+.budgetaccount-accordion button {
+    color: chocolate !important;
+    font-size: 20px;
+}
+
+/*.budgetaccount-accordion button > span{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}*/
+
+.budgetaccount-accordion .accordion-button {
+    display: flex;
+    align-items: center;
+}
+
+
+    .budgetaccount-accordion .accordion-button > span:first-child {
+        flex: 1;
+    }
+
+.activos-accordion {
+    color: green;
+}
+
+
+.pasivos-accordion {
+    color: red;
+}

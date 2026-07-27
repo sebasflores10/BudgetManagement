@@ -1,0 +1,51 @@
+﻿@*
+    (Udemy): 113. Formulario de Cuentas
+*@
+
+@model BudgetAccountCreateViewModel
+
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<h1>Crear nueva cuenta</h1>
+<h5 class="mb-3">
+    La cuenta se refiere a los distintos balances de divisas que tienes: <br />
+    Ejemplo: Préstamos, tarjetas de crédito, cuentas de ahorro, etc.
+</h5>
+
+<form asp-action="CreateBudgetAccount" id="formCreateBudgetAccount">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="account_name" class="form-label"></label>
+        <input asp-for="account_name" class="form-control" />
+        <span asp-validation-for="account_name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="account_type_id" class="form-label"></label>
+        <select asp-for="account_type_id" class="form-control" asp-items="Model.AccountType"></select>
+        <span asp-validation-for="account_type_id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="account_balance" class="form-label"></label>
+        <input asp-for="account_balance" class="form-control" />
+        <span asp-validation-for="account_balance" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="description" class="form-label"></label>
+        <textarea asp-for="description" class="form-control"></textarea>
+        <span asp-validation-for="description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear cuenta</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

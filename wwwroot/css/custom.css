@@ -1,0 +1,82 @@
+﻿/***************************************************** 
+    (Udemy): 119. Arrastrando Filas de una Tabla
+*****************************************************/
+
+#reorderJQueryUI tr{
+    cursor: move;
+}
+
+
+
+/***************************************************** 
+    (Udemy): 128. Indice de Cuentas - Vista
+*****************************************************/
+
+.total-div-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.total-card {
+    border: 1px solid #dee2e6;
+    border-left: 6px solid #6c757d;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(33, 37, 41, 0.08);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+    .total-card:hover,
+    .total-card:focus {
+        box-shadow: 0 14px 30px rgba(33, 37, 41, 0.14);
+        outline: none;
+        transform: translateY(-3px);
+    }
+
+.total-card-title {
+    color: #495057;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+
+.total-card-value {
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.activos {
+    border-left-color: #198754;
+    background: linear-gradient(180deg, #f2fbf6 0%, #fff 72%);
+    color: #146c43;
+}
+
+.pasivos {
+    border-left-color: #dc3545;
+    background: linear-gradient(180deg, #fff5f5 0%, #fff 72%);
+    color: #b02a37;
+}
+
+    .pasivos .total-card-title::after {
+        content: " !";
+    }
+
+.total-balance {
+    border-left-color: #0d6efd;
+    background: linear-gradient(180deg, #f3f8ff 0%, #fff 72%);
+    color: #0a58ca;
+}
+
+@media (max-width: 575.98px) {
+    .total-card {
+        text-align: left;
+    }
+}
+
+

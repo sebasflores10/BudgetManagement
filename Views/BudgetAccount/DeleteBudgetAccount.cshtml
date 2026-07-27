@@ -1,0 +1,16 @@
+﻿@*
+    (Udemy): Borrando Cuentas
+*@
+
+@model BudgetAccount
+
+@{
+    ViewData["Title"] = "Borrar cuenta"; 
+}
+
+<h3 class="mb-3">¿Desea eliminar la cuenta @Model.account_name?</h3>
+<form asp-action="DeleteBudgetAccountConfirmed" id="formDeleteBudgetAccount">
+    <input type="hidden" asp-for="account_id" />
+    <button class="btn btn-danger">Eliminar</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+</form>

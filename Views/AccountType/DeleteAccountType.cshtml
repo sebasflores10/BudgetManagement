@@ -1,0 +1,16 @@
+﻿@*
+    (Udemy): 118. Borrando Tipos Cuentas
+*@
+
+@model AccountType
+
+@{
+    ViewData["Title"] = "Eliminar Tipo de Cuenta";
+}
+
+<h3 class="mb-3">¿Desea eliminar el tipo de cuenta @Model.account_type_name?</h3>
+<form asp-action="DeleteAccountTypeConfirmed" id="formDeleteAccountType">
+    <input type="hidden" asp-for="account_type_id" />
+    <button class="btn btn-danger">Eliminar</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+</form>

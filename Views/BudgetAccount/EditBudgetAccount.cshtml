@@ -1,0 +1,49 @@
+﻿@*
+    (Udemy): Editando Cuentas - Agregando Íconos a la Aplicación
+*@
+
+@model BudgetAccountCreateViewModel
+
+@{
+    ViewData["Title"] = "Editar cuentas";
+}
+
+
+<h1>Editar cuenta: @Model.account_name</h1>
+
+<form asp-action="EditBudgetAccount" id="formEditBudgetAccount">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="account_id" />
+
+    <div class="mb-3">
+        <label asp-for="account_name" class="form-label"></label>
+        <input asp-for="account_name" class="form-control" />
+        <span asp-validation-for="account_name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="account_type_id" class="form-label"></label>
+        <select asp-for="account_type_id" class="form-control" asp-items="Model.AccountType"></select>
+        <span asp-validation-for="account_type_id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="account_balance" class="form-label"></label>
+        <input asp-for="account_balance" class="form-control" />
+        <span asp-validation-for="account_balance" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="description" class="form-label"></label>
+        <textarea asp-for="description" class="form-control"></textarea>
+        <span asp-validation-for="description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Editar cuenta</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

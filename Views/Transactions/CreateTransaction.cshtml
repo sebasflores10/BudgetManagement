@@ -1,0 +1,79 @@
+﻿@*
+    (Udemy): 139. Trabajando con Fechas en un Formulario
+*@
+
+@model TransactionsCreateViewModel
+
+@{
+    ViewData["Title"] = "Crear Transacción";
+}
+
+<h1>Crear transacción</h1>
+<h5>
+    Una transacción te permite indicar tus ingresos y gastos.
+</h5>
+
+<form asp-action="CreateTransaction" id="formCreateTransaction">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="transaction_date" class="form-label">Fecha de la transacción</label>
+        <input asp-for="transaction_date" class="form-control" />
+        <span asp-validation-for="transaction_date" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="account_id" class="form-label"></label>
+        <select asp-for="account_id" asp-items="@Model.Cuentas" class="form-select"></select>
+        <span asp-validation-for="account_id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="operation_type_id" class="form-label"></label>
+        <select asp-for="operation_type_id" asp-items="@Html.GetEnumSelectList<OperationType>()" class="form-select"></select>
+        <span asp-validation-for="operation_type_id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="category_id" class="form-label"></label>
+        <select asp-for="category_id" asp-items="@Model.Categorias" class="form-select"></select>
+        <span asp-validation-for="category_id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="amount" class="form-label"></label>
+        <input asp-for="amount" class="form-control" />
+        <span asp-validation-for="amount" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="notes" class="form-label"></label>
+        <textarea asp-for="notes" class="form-control"></textarea>
+        <span asp-validation-for="notes" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Crear transacción</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/TransactionsFroms.js" asp-append-version="true"></script>
+
+    @*
+        Código fue hecho en las siguientes clases para validar el DropDown cascada de
+        Categorias:
+        (Udemy): 143. Actualizando Transacciones - Parte 1
+        (Udemy): 144. Actualizando Transacciones - Parte 2
+        (Udemy): 145. Vista de Actualización de Transacciones [Adaptado]
+    *@
+
+    <script>
+        const urlGetCategories = '@Url.Action("GetCategoriesList")';
+
+        $(function(){
+            TransactionsInitForms(urlGetCategories);
+        });
+    </script>
+}

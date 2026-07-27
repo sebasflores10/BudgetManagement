@@ -1,0 +1,49 @@
+﻿@*
+    (Udemy): Índice de Categorías
+*@
+
+@model IEnumerable<Category>
+
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<h1>Categorías</h1>
+<h5>
+    La categoría nos permite indicar en qué gastamos el dinero, como también,
+    de dónde provienen los ingresos.
+</h5>
+
+<a asp-action="CreateCategory" class="btn btn-primary mb-4">Crear categoría</a>
+
+<table class="table table-hover table-responsive table-primary">
+    <thead>
+        <tr>
+            <th>Acciones</th>
+            <th>Nombre</th>
+            <th>Tipo operación</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var category in Model)
+        {
+            <tr>
+                <td>
+                    <a class="btn btn-warning" asp-action="EditCategory" 
+                        asp-route-category_id="@category.category_id">Editar</a>
+                    <a class="btn btn-danger" asp-action="DeleteCategory"
+                       asp-route-category_id="@category.category_id">Eliminar</a>
+                </td>
+                
+                <td>
+                    @category.category_name
+                </td>
+
+                <td>
+                    @category.operation_type_id.ToString()
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

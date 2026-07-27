@@ -1,0 +1,13 @@
+### Debug folders
+bin
+bin/*
+obj
+obj/*
+
+## Other
+.vs/
+.vs/*
+
+
+## Personal configurations
+BudgetManagement.csproj.user

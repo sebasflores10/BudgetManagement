@@ -1,0 +1,98 @@
+﻿@*
+    (Udemy): 115. Listado Tipos Cuentas
+*@
+
+@model IEnumerable<AccountType>
+
+@{
+    ViewData["Title"] = "Listado de Tipos de Cuentas"; 
+}
+
+<h1>Tipos de cuentas</h1>
+<h5 class="mb-3">
+    El tipo de cuenta se refiere a cómo podemos agrupar cuentas. <br />
+    Ejemplo: Préstamos, tarjetas de crédito, cuentas de ahorro, etc.
+</h5>
+
+<a asp-action="CreateAccountType" class="btn btn-primary mb-3">Nueva cuenta</a>
+
+<table class="table table-responsive table-hover">
+    <thead>
+        <tr>
+            <th>Acciones</th>
+            <th>Nombre de la cuenta</th>
+        </tr>
+    </thead>
+
+    <tbody id="reorderJQueryUI">
+        @foreach (var accountType in Model)
+        {
+            <tr>
+                <td>
+                    @* 
+                        Para poder acceder los IDs, se necesita un 'input type="hidden"'
+                        para capturarlos.
+                        (Udemy): 120. Haciendo un post con el FETCH API [2:45 mins]
+                    *@
+                    <input type="hidden" 
+                        value="@accountType.account_type_id" 
+                        class="ids" />
+
+                    <a asp-action="EditAccountType" 
+                       asp-route-account_type_id="@accountType.account_type_id"
+                    class="btn btn-sm btn-warning">Editar</a>
+
+                    <a asp-action="DeleteAccountType" 
+                       asp-route-account_type_id="@accountType.account_type_id"
+                    class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+                <td>@accountType.account_type_name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <script>
+        const orderURL = '@Url.Action("ReorderAccountTypes")';
+
+        $(function(){
+            $("#reorderJQueryUI").sortable({
+                stop: async function(e, ui){
+                    await reordering();
+                }
+            });
+
+            async function reordering(){
+                const ids = getTrIDS();
+                await sendBackendIDS(ids);
+            }
+
+            function getTrIDS(){
+                // Obtenemos los IDS de los tipos de cuenta con la clase "ids" para obtener
+                // todos sus "ids".
+                // Los mapeamos con JQuery UI y luego los devolvemos en un array con ".get()"
+                const ids = $(".ids").map(function(){
+                    return $(this).val();
+                }).get();
+                console.log(ids);
+
+                return ids;
+            }
+
+
+            async function sendBackendIDS(ids){
+                var data = JSON.stringify(ids);
+
+                await fetch(orderURL, {
+                    method: 'POST',
+                    body: data,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,38 @@
+﻿@*
+    (Udemy): 100. Formulario Tipo Cuentas
+*@
+
+@model AccountType
+
+@{
+    ViewData["Title"] = "Crear Tipo de Cuenta"; 
+}
+
+<h1>Crear tipo de cuenta</h1>
+<h5 class="mb-3">
+    El tipo de cuenta se refiere a cómo podemos agrupar cuentas. <br />
+    Ejemplo: Préstamos, tarjetas de crédito, cuentas de ahorro, etc.
+</h5>
+
+@* 
+    (Udemy): 102. Visualizando los Errores de Validación
+    Requiere del uso de DataAnnotations en el modelo. (Models/AccountType.cs)
+*@
+<div asp-validation-summary="ModelOnly" class="text-danger"></div> 
+
+<form asp-controller="AccountType" asp-action="CreateAccountType">
+    <div class="mb-3">
+        <label asp-for="account_type_name" class="form-label"></label>
+        <input type="text" id="accountTypeName" asp-for="account_type_name" class="form-control" />
+        <span asp-validation-for="account_type_name" class="text-danger mt-sm-3"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+
+@* (Udemy): Validación en el Front-End [3:00 mins] *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

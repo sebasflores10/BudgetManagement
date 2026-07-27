@@ -1,0 +1,39 @@
+﻿@*
+    (Udemy): Editar Categorías
+*@
+
+@model Category
+
+@{
+    ViewData["Title"] = "Editar categoría";
+}
+
+<h1>Editar categoría @Model.category_name</h1>
+<h5>
+    La categoría nos permite indicar en qué gastamos el dinero, como también,
+    de dónde provienen los ingresos.
+</h5>
+
+<form asp-action="EditCategory" id="formEditCategory">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="category_id" />
+
+    <div class="mb-3">
+        <label asp-for="category_name" class="form-label"></label>
+        <input asp-for="category_name" class="form-control" />
+        <span asp-validation-for="category_name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="operation_type_id" class="form-label"></label>
+        <select asp-for="operation_type_id" asp-items="Html.GetEnumSelectList<OperationType>()" class="form-select"></select>
+        <span asp-validation-for="operation_type_id" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Editar categoría</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

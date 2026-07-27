@@ -1,0 +1,15 @@
+{
+  "version": "3.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jqueryui@1.14.2",
+      "destination": "wwwroot/lib/jquery-ui-1.14.2/jqueryui/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "wwwroot/lib/jquery-ui-1.14.2/jquery-ui.min.js",
+      "destination": "wwwroot/lib/jquery-ui-1.14.2/"
+    }
+  ]
+}
