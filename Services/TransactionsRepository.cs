@@ -10,6 +10,8 @@ namespace BudgetManagement.Services
         Task CreateTransaction(Transactions transactions);
         Task DeleteTransaction(int transaction_id);
         Task<Transactions> GetTransactionByID(int transaction_id, int user_id);
+        Task<IEnumerable<Transactions>> GetTransactionsByBudgetAccount(GetTransactionsByBudgetAccount model);
+        Task<IEnumerable<Transactions>> GetTransactionsByUserID(GetUserTransactionRequest model);
         Task UpdateTransaction(Transactions transactions, decimal previous_amount, int previous_account_id);
     }
 
@@ -158,6 +160,110 @@ namespace BudgetManagement.Services
             {
                 throw new ArgumentException($"Error while searching transaction with ID {transaction_id} | ",
                     e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'GetTransactionsByBudgetAccount'
+        /// Permite la consulta a la base de datos para mostrar en las transacciones
+        /// comparando por el ID de la cuenta, ID de la categoría, y el ID del usuario
+        /// para consultar todas las transacciones realizadas entre una fecha de inicio
+        /// y una fecha límite.
+        /// (Udemy): 149. Movimientos de Cuentas
+        /// </summary>
+        /// <param name="model">Parámetro que captura el objeto 
+        /// "Models/GetTransactionsByBudgetAccount.cs"</param>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task<IEnumerable<Transactions>> GetTransactionsByBudgetAccount
+            (GetTransactionsByBudgetAccount model)
+        {
+            try 
+            {
+                using var conn = new SqlConnection(databaseConnectionString);
+                return await conn.QueryAsync<Transactions>(@"SELECT 
+                    tra.transaction_id, tra.amount, tra.transaction_date, 
+                    cat.category_name AS Categoria, cat.operation_type_id,
+                    bacc.account_name AS Cuenta 
+                FROM 
+                    [dbo].[transactions] tra
+                INNER JOIN 
+                    [dbo].[category] cat
+                ON 
+                    cat.category_id = tra.category_id
+                INNER JOIN 
+                    [dbo].[budget_account] bacc
+                ON 
+                    bacc.account_id = tra.account_id
+                WHERE 
+                    tra.account_id = @account_id
+                AND 
+                    tra.user_id = @user_id
+                AND 
+                    tra.transaction_date 
+                BETWEEN 
+                    @start_date AND @end_date", model);
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException($"Error while searching transaction " +
+                    $"for budget account {model.account_id} | ", e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'GetTransactionByUserID'
+        /// Permite consultar a la base de datos una colección de transacciones que el 
+        /// usuario ha realizado durante un día por su ID de usuario a la tabla
+        /// [dbo].[transactions]. 
+        /// Llamado por el "Index()" en "Controllers/TransactionsController.cs"
+        /// (Udemy): 152. Reporte Diario - Query
+        /// </summary>
+        /// <param name="model">Parámetro que captura el objeto de 
+        /// "Models/GetUserTransactionRequest.cs"</param>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task<IEnumerable<Transactions>> GetTransactionsByUserID
+            (GetUserTransactionRequest model)
+        {
+            try
+            {
+                using var conn = new SqlConnection(databaseConnectionString);
+                return await conn.QueryAsync<Transactions>(
+                    @"SELECT 
+                        tra.transaction_id, tra.amount, tra.transaction_date, 
+                        cat.category_name AS Categoria, cat.operation_type_id,
+                        bacc.account_name AS Cuenta 
+                    FROM 
+                        [dbo].[transactions] tra
+                    INNER JOIN 
+                        [dbo].[category] cat
+                    ON 
+                        cat.category_id = tra.category_id
+                    INNER JOIN 
+                        [dbo].[budget_account] bacc
+                    ON 
+                        bacc.account_id = tra.account_id
+                    WHERE
+                        tra.user_id = @user_id
+                    AND 
+                        tra.transaction_date 
+                    BETWEEN 
+                        @start_date AND @end_date
+                    ORDER BY
+                        tra.transaction_date DESC", model);
+                // Para permitir al usuario observar desde "Views/Transactions/Index.cshtml"
+                // la última transacción que se editó o creó, visualizarse en la tabla desde
+                // el más nuevo hasta el más viejo
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException($"Error while searching transaction for user ID " +
+                    $"{model.user_id} | ", e.Message);
             }
         }
     }

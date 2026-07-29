@@ -1,9 +1,12 @@
 ﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+    (Udemy): 153. Vista del Reporte Diario [2:00 mins]
 *@
 
+@model TransactionsDashboard
+
 @{
-    ViewData["Title"] = "Transacciones";
+    ViewData["Title"] = "Reporte Transacciones";
 }
 
-<h1>Transacciones</h1>
+
+<partial name="_DetailedTransactionsReport" model="Model" />

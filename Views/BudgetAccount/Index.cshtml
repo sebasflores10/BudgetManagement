@@ -88,7 +88,10 @@
                             <li class="list-group-item">
 
                                 <span>
-                                    <strong>@budgetAccount.account_name</strong>
+                                    <strong>
+                                        <a asp-action="BudgetAccountDashboard"
+                                        asp-route-account_id="@budgetAccount.account_id">@budgetAccount.account_name</a>
+                                    </strong>
                                     <a class="btn btn-warning" 
                                     asp-action="EditBudgetAccount"
                                     asp-route-account_id="@budgetAccount.account_id">

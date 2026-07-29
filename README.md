@@ -56,15 +56,37 @@ ManejoPresupuestos is a full-stack budget tracking application that allows users
 
 ## 🗄️ Database Schema
 
-Key tables used in the application:
+Key tables used in the application and columns:
 
 ```
-[dbo].[account_types]      (account_type_id, name, user_id, order)
-[dbo].[budget_account]     (account_id, name, balance, account_type_id, user_id, description)
-[dbo].[category]           (category_id, name, operation_type_id, user_id)
-[dbo].[transactions]       (transaction_id, account_id, category_id, amount, date, note, user_id)
+TABLES
+
+[dbo].[account_types]      (account_type_id, account_type_name, user_id, user_order)
+[dbo].[budget_account]     (account_id, account_name, account_type_id, account_balance, description)
+[dbo].[category]           (category_id, category_name, operation_type_id, user_id)
+[dbo].[transactions]       (transaction_id, user_id, transacction_date, amount, notes, account_id, category_id)
 [dbo].[operation_type]     (operation_type_id, description)
 [dbo].[users]              (user_id, email, standard_email, password_hash)
+
+----------------------------------------------------------------------------------------------------
+
+PRIMARY KEYS
+
+[dbo].[account_types]      {account_type_id}
+[dbo].[budget_account]     {account_id}
+[dbo].[category]           {category_id}
+[dbo].[transactions]       {transaction_id}
+[dbo].[operation_type]     {operation_type_id}
+[dbo].[users]              {user_id}
+
+----------------------------------------------------------------------------------------------------
+
+FOREIGN KEYS
+
+[dbo].[account_types]      {user_id}
+[dbo].[budget_account]     {account_type_id}
+[dbo].[category]           {operation_type_id} {user_id}
+[dbo].[transactions]       {user_id} {account_id} {category_id}
 ```
 
 > Relationships are enforced via Foreign Key constraints in SQL Server.

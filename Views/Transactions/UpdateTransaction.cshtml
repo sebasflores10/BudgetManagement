@@ -6,6 +6,9 @@
 
 @{
     ViewData["Title"] = "Editar Transacciones";
+
+    @* (Udemy): 151. Devolviendo al Usuario al Lugar Donde se Encontraba [7:10 mins] *@
+    var linkCancelar = Model.returnURL ?? Url.Action("Index");
 }
 
 
@@ -19,6 +22,8 @@
     <input type="hidden" asp-for="transaction_id" />
     <input type="hidden" asp-for="previous_amount" />
     <input type="hidden" asp-for="previous_account_id" />
+    <input type="hidden" asp-for="returnURL" />
+
 
     <div class="mb-3">
         <label asp-for="transaction_date" class="form-label">Fecha de la transacción</label>
@@ -58,13 +63,13 @@
 
     <button class="btn btn-primary">Editar</button>
     <button class="btn btn-danger" asp-action="DeleteTransaction">Borrar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    <a href="@linkCancelar" class="btn btn-secondary">Cancelar</a>
 </form>
 
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/TransactionsFroms.js" asp-append-version="true"></script>
+    <script src="~/js/TransactionsForms.js" asp-append-version="true"></script>
 
     @* 
         Código fue hecho en las siguientes clases para validar el DropDown cascada de

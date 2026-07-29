@@ -17,6 +17,11 @@ function TransactionsInitForms(urlGetCategories){
             }
         });
 
+        if (!response.ok) {
+            console.error("GetCategoriesList failed: ", response.status, await response.text());
+            return;
+        }
+
         const json = await response.json();
         console.log(json);
 

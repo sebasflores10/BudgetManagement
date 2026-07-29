@@ -3,6 +3,7 @@ using BudgetManagement.Models;
 using BudgetManagement.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Principal;
 using System.Transactions;
 
 namespace BudgetManagement.Controllers
@@ -29,9 +30,57 @@ namespace BudgetManagement.Controllers
         }
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int month, int year)
         {
-            return View();
+            var user_id = _userService.GetUserID();
+
+            DateTime start_date;
+            DateTime end_date;
+
+            if (month <= 0 || month > 12 || year <= 1900)
+            {
+                var today = DateTime.Today;
+                start_date = new DateTime(today.Year, today.Month, 1);
+            }
+            else
+            {
+                start_date = new DateTime(year, month, 1);
+            }
+
+            end_date = start_date.AddMonths(1).AddDays(-1);
+
+            var userTransactions = new GetUserTransactionRequest()
+            {
+                user_id = user_id,
+                start_date = start_date,
+                end_date = end_date
+            };
+
+            var transactions = await _transactionsRepository
+                .GetTransactionsByUserID(userTransactions);
+
+            var model = new TransactionsDashboard();
+
+            var transactionsByDate = transactions.OrderByDescending(x => x.transaction_date)
+                .GroupBy(x => x.transaction_date)
+                .Select(group => new TransactionsDashboard.TransactionsByDate()
+                {
+                    transaction_date = group.Key,
+                    user_transactions_list = group.AsEnumerable()
+                });
+
+            model.transactions_by_date = transactionsByDate;
+            model.start_date = start_date;
+            model.end_date = end_date;
+
+            // (Udemy): 150. Vista de Movimientos de Cuentas [4:15 mins]
+            ViewBag.previous_month = start_date.AddMonths(-1).Month;
+            ViewBag.previous_year = start_date.AddMonths(-1).Year;
+            ViewBag.month_later = start_date.AddMonths(1).Month;
+            ViewBag.year_later = start_date.AddMonths(1).Year;
+            ViewBag.returnURL = HttpContext.Request.Path + HttpContext.Request.QueryString;
+
+            return View(model);
         }
 
 
@@ -116,11 +165,13 @@ namespace BudgetManagement.Controllers
         /// Permite al usuario mostrar la vista para editar transacciones, la cual es
         /// "Views/Transactions/UpdateTransaction.cshtml"
         /// (Udemy): Actualizando Transacciones - Parte 2
+        /// (Udemy): Devolviendo al Usuario al Lugar Donde se Encontraba [Actualizado]
         /// </summary>
         /// <param name="transaction_id">Parámetro que captura el ID de la transacción</param>
         /// <returns>Dirige al usuario a la vista "Views/Transactions/UpdateTransaction.cshtml"</returns>
         [HttpGet]
-        public async Task<IActionResult> UpdateTransaction(int transaction_id)
+        public async Task<IActionResult> UpdateTransaction(int transaction_id,
+            string returnURL = null)
         {
             var user_id = _userService.GetUserID();
             var transaction = await _transactionsRepository
@@ -146,6 +197,7 @@ namespace BudgetManagement.Controllers
                 transaction.operation_type_id);
 
             model.Cuentas = await GetBudgetAccountsToTransactions(user_id);
+            model.returnURL = returnURL;
 
             return View(model);
         }
@@ -155,6 +207,7 @@ namespace BudgetManagement.Controllers
         /// Método 'UpdateTransaction'
         /// Permite al usuario realizar la acción de editar una transacción.
         /// (Udemy): Actualizando Transacciones - Parte 2
+        /// (Udemy): Devolviendo al Usuario al Lugar Donde se Encontraba [Actualizado - 3:00 mins]
         /// </summary>
         /// <param name="model">Parámetro que captura el objeto 
         /// "Models/UpdateTransactionsViewModel.cs", la cual hereda de
@@ -204,7 +257,15 @@ namespace BudgetManagement.Controllers
                 .UpdateTransaction(transaction, model.previous_amount, 
                 model.previous_account_id);
 
-            return RedirectToAction("Index");
+            if (string.IsNullOrEmpty(model.returnURL))
+            {
+                // Dirigimos al usuario a una URL que tenemos en el dominio del controller
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return LocalRedirect(model.returnURL);
+            }
         }
 
 
@@ -213,12 +274,14 @@ namespace BudgetManagement.Controllers
         /// Permite al usuario la acción de eliminar la transacción por su ID desde la 
         /// vista "Views/Transactions/DeleteTransaction.cshtml".
         /// (Udemy): Borrar Transacciones - Un Formulario Con Dos Acciones
+        /// (Udemy): 151. Devolviendo al Usuario al Lugar Donde se Encontraba [Actualizado - 6:07 mins]
         /// </summary>
         /// <param name="transaction_id">Parámetro que captura el ID de la transacción</param>
         /// <returns>Dirige al usuario a la vista "Views/Transactions/Index.cshtml"
         /// luego de borrar la transacción</returns>
         [HttpPost]
-        public async Task<IActionResult> DeleteTransaction(int transaction_id)
+        public async Task<IActionResult> DeleteTransaction(int transaction_id,
+            string returnURL = null)
         {
             var user_id = _userService.GetUserID();
 
@@ -231,7 +294,16 @@ namespace BudgetManagement.Controllers
             }
 
             await _transactionsRepository.DeleteTransaction(transaction_id);
-            return RedirectToAction("Index");
+
+            if (string.IsNullOrEmpty(returnURL))
+            {
+                // Dirigimos al usuario a una URL que tenemos en el dominio del controller
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return LocalRedirect(returnURL);
+            }
         }
 
 

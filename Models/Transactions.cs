@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Principal;
 
 namespace BudgetManagement.Models
 {
@@ -36,5 +38,8 @@ namespace BudgetManagement.Models
 
         [Display(Name = "Tipo de Operación")]
         public OperationType operation_type_id { get; set; } = OperationType.Ingreso;
+
+        public string? Cuenta { get; set; }// (Udemy): 149. Movimientos de Cuentas
+        public string? Categoria { get; set; }// (Udemy): 149. Movimientos de Cuentas
     }
 }
