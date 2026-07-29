@@ -1,0 +1,14 @@
+﻿@*
+    (Udemy): 150. Vista de Movimientos de Cuentas
+    (Udemy): 153. Vista del Reporte Diario [Modificado]
+*@
+
+@model TransactionsDashboard
+
+@{
+    ViewData["Title"] = "Cuentas Dashboard";
+}
+
+<h1>Movimientos @ViewBag.Cuenta</h1>
+
+<partial name="_DetailedTransactionsReport" model="Model" />

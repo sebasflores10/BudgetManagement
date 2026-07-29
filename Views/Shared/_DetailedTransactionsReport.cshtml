@@ -1,0 +1,118 @@
+﻿@*
+    (Udemy): 153. Vista del Reporte Diario
+    *************************************************************************************
+    Creando la vista parcial para que el reporte que se realizó anteriormente en
+    "Views/BudgetAccount/BudgetAccountDasboard.cshtml", pueda ser reutilizado tanto en 
+    "BudgetAccount/" como en "Transactions/".
+*@
+
+@model TransactionsDashboard
+
+
+<h4>
+    <a asp-route-month="@ViewBag.previous_month"
+       asp-route-year="@ViewBag.previous_year"
+       asp-route-account_id="@ViewBag.account_id"
+       class="btn btn-secondary"><i class="bi-chevron-left"></i></a>
+
+    @Model.start_date.ToString("MMM")-@Model.start_date.Year
+
+    <a asp-route-month="@ViewBag.month_later"
+       asp-route-year="@ViewBag.year_later"
+       asp-route-account_id="@ViewBag.account_id"
+       class="btn btn-secondary"><i class="bi-chevron-right"></i></a>
+</h4>
+
+<div class="total-div-container mb-3">
+    <div>
+        <div>
+            <strong>Depósitos</strong>
+        </div>
+        <div class="activos">
+            @Model.deposits_balance.ToString("N")
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <strong>Retiros</strong>
+        </div>
+        <div class="pasivos">
+            @Model.withdrawals_balance.ToString("N")
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <strong class="total-card-title">Total</strong>
+        </div>
+        <div class="total-card">
+            @Model.total.ToString("N")
+        </div>
+    </div>
+</div>
+
+@if (Model.transactions_by_date.Count() == 0)
+{
+    <h5 class="align-content-center">No hay transacciones en este mes</h5>
+}
+else
+{
+    <table class="table table-group-divider table table-secondary table-responsive">
+        <tbody>
+            @* Para las transacciones por dia *@
+            @foreach (var transactions_by_date in Model.transactions_by_date)
+            {
+                <tr>
+                    <td colspan="3">
+                        @transactions_by_date.transaction_date.Day
+                        <span class="badge bg-secondary">
+                            @transactions_by_date.transaction_date.ToString("dddd")
+                        </span>
+                    </td>
+
+                    <td class="activos-accordion">
+                        @transactions_by_date.deposits.ToString("N")
+                    </td>
+
+                    <td class="pasivos-accordion">
+                        @transactions_by_date.withdrawals.ToString("N")
+                    </td>
+                </tr>
+
+                @* Para toda transacción realizada dentro del día *@
+                @foreach (var transaction in transactions_by_date.user_transactions_list)
+                {
+                    <tr style="vertical-align: middle">
+                        <td>
+                            <a asp-controller="Transactions" asp-action="UpdateTransaction"
+                               asp-route-returnURL="@ViewBag.returnURL"
+                               asp-route-transaction_id="@transaction.transaction_id">
+                                <i class="bi-pencil"></i>
+                            </a>
+                        </td>
+
+                        <td>
+                            @transaction.Categoria
+                        </td>
+
+                        <td>
+                            @transaction.Cuenta
+                        </td>
+
+                        <td class="activos-accordion">
+                            @(transaction.operation_type_id == OperationType.Ingreso ?
+                            transaction.amount.ToString("N") : null)
+                        </td>
+
+                        <td class="pasivos-accordion">
+                            @* Need improvements to show better colors *@
+                            @(transaction.operation_type_id == OperationType.Egreso ?
+                            transaction.amount.ToString("N") : null)
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
