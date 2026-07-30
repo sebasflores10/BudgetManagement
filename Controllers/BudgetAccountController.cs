@@ -18,19 +18,22 @@ namespace BudgetManagement.Controllers
         private readonly IBudgetAccountRepository _budgetAccountRepository;
         private readonly IMapper _mapper;
         private readonly ITransactionsRepository _transactionsRepository;
+        private readonly IReportServices _reportServices;
 
 
         public BudgetAccountController(IAccountTypeRepository accountTypeRepository,
             IUserService userService,
             IBudgetAccountRepository budgetAccountRepository,
             IMapper mapper,
-            ITransactionsRepository transactionsRepository)
+            ITransactionsRepository transactionsRepository,
+            IReportServices reportServices)
         {
             this._accountTypeRepository = accountTypeRepository;
             this._userService = userService;
             this._budgetAccountRepository = budgetAccountRepository;
             this._mapper = mapper;
             this._transactionsRepository = transactionsRepository;
+            this._reportServices = reportServices;
         }
 
 
@@ -256,12 +259,14 @@ namespace BudgetManagement.Controllers
         /// en "Views/BudgetAccount/Index.cshtml"
         /// (Udemy): Movimientos de Cuentas [10:10 mins]
         /// (Udemy): 151. Devolviendo al Usuario al Lugar Donde se Encontraba [Actualizado]
+        /// (Udemy): 154. Refactorizando [Modificado] - Código llevado a "Services/ReportServices.cs"
         /// </summary>
         /// <param name="account_id">Parámetro que captura el ID de la cuenta de 
         /// "Models/BudgetAccount.cs"</param>
         /// <param name="month">Parámetro que captura el mes</param>
         /// <param name="year">Parámetro que captura el año</param>
-        /// <returns></returns>
+        /// <returns>Dirige al usuario a la vista de cuentas 
+        /// "Views/BudgetAccount/BudgetAccountDashboard.cshtml"</returns>
         public async Task<IActionResult> BudgetAccountDashboard
             (int account_id, int month, int year)
         {
@@ -274,58 +279,10 @@ namespace BudgetManagement.Controllers
                 return RedirectToAction("NotFound", "Home");
             }
 
-            DateTime start_date;
-            DateTime end_date;
-
-            if (month <= 0 || month > 12 || year <= 1900)
-            {
-                var today = DateTime.Today;
-                start_date = new DateTime(today.Year, today.Month, 1);
-            }
-            else
-            {
-                start_date = new DateTime(year, month, 1);
-            }
-
-            end_date = start_date.AddMonths(1).AddDays(-1);
-
-            var transactionsByBudgetAccount = new GetTransactionsByBudgetAccount() 
-            { 
-                user_id = user_id,
-                account_id = account_id,
-                start_date = start_date,
-                end_date = end_date
-            };
-
-            var transactions = await _transactionsRepository
-                .GetTransactionsByBudgetAccount(transactionsByBudgetAccount);
-
-            var model = new TransactionsDashboard();
             ViewBag.Cuenta = account.account_name;
-            ViewBag.account_id = account_id;
 
-            var transactionsByDate = transactions.OrderByDescending(x => x.transaction_date)
-                .GroupBy(x => x.transaction_date)
-                .Select(group => new TransactionsDashboard.TransactionsByDate()
-                {
-                    transaction_date = group.Key,
-                    user_transactions_list = group.AsEnumerable()
-                });
-
-            model.transactions_by_date = transactionsByDate;
-            model.start_date = start_date;
-            model.end_date = end_date;
-
-            // (Udemy): 150. Vista de Movimientos de Cuentas [4:15 mins]
-            ViewBag.previous_month = start_date.AddMonths(-1).Month;
-            ViewBag.previous_year = start_date.AddMonths(-1).Year;
-            ViewBag.month_later = start_date.AddMonths(1).Month;
-            ViewBag.year_later = start_date.AddMonths(1).Year;
-            // (Udemy): 151. Devolviendo al Usuario al Lugar Donde se Encontraba [4:15 mins]
-            // Sustraemos la URL para luego de de que el usuario modifique o elimine
-            // alguna transacción, se vuelva a dirigir a la vista
-            // "Views/BudgetAccount/BudgetAccountDashboard.cshtml"
-            ViewBag.returnURL = HttpContext.Request.Path + HttpContext.Request.QueryString;
+            var model = await _reportServices
+                .GetTransactionsReportByBudgetAccount(user_id, account_id, month, year, ViewBag);
 
             return View(model);
         }

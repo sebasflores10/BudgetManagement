@@ -15,71 +15,40 @@ namespace BudgetManagement.Controllers
         private readonly IBudgetAccountRepository _budgetAccountRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
+        private readonly IReportServices _reportServices;
 
         public TransactionsController(ITransactionsRepository transactionsRepository,
             IUserService userService,
             IBudgetAccountRepository budgetAccountRepository,
             ICategoryRepository categoryRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IReportServices reportServices)
         {
             this._transactionsRepository = transactionsRepository;
             this._userService = userService;
             this._budgetAccountRepository = budgetAccountRepository;
             this._categoryRepository = categoryRepository;
             this._mapper = mapper;
+            this._reportServices = reportServices;
         }
 
 
+        /// <summary>
+        /// Método 'Index'
+        /// Permite al usuario poder visualizar, editar o eliminar sus transaccions de la
+        /// vista "Views/Transactions/Index.cshtml".
+        /// (Udemy): 153. Vista del Reporte Diario
+        /// (Udemy): 154. Refactorizando [Modificado] - Código se cambió a "Services/ReportServices.cs"
+        /// </summary>
+        /// <param name="month">Parámetro que captura el mes del calendario</param>
+        /// <param name="year">Parámetro que captura el año del calendario</param>
+        /// <returns>Dirige al usuario a la vista principal de transacciones
+        /// "Views/Transactions/Index.cshtml".</returns>
         public async Task<IActionResult> Index(int month, int year)
         {
             var user_id = _userService.GetUserID();
-
-            DateTime start_date;
-            DateTime end_date;
-
-            if (month <= 0 || month > 12 || year <= 1900)
-            {
-                var today = DateTime.Today;
-                start_date = new DateTime(today.Year, today.Month, 1);
-            }
-            else
-            {
-                start_date = new DateTime(year, month, 1);
-            }
-
-            end_date = start_date.AddMonths(1).AddDays(-1);
-
-            var userTransactions = new GetUserTransactionRequest()
-            {
-                user_id = user_id,
-                start_date = start_date,
-                end_date = end_date
-            };
-
-            var transactions = await _transactionsRepository
-                .GetTransactionsByUserID(userTransactions);
-
-            var model = new TransactionsDashboard();
-
-            var transactionsByDate = transactions.OrderByDescending(x => x.transaction_date)
-                .GroupBy(x => x.transaction_date)
-                .Select(group => new TransactionsDashboard.TransactionsByDate()
-                {
-                    transaction_date = group.Key,
-                    user_transactions_list = group.AsEnumerable()
-                });
-
-            model.transactions_by_date = transactionsByDate;
-            model.start_date = start_date;
-            model.end_date = end_date;
-
-            // (Udemy): 150. Vista de Movimientos de Cuentas [4:15 mins]
-            ViewBag.previous_month = start_date.AddMonths(-1).Month;
-            ViewBag.previous_year = start_date.AddMonths(-1).Year;
-            ViewBag.month_later = start_date.AddMonths(1).Month;
-            ViewBag.year_later = start_date.AddMonths(1).Year;
-            ViewBag.returnURL = HttpContext.Request.Path + HttpContext.Request.QueryString;
-
+            var model = await _reportServices
+                .GetTransactionsReport(user_id, month, year, ViewBag);
             return View(model);
         }
 

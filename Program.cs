@@ -35,6 +35,10 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 // Servicio de la clase 'Services/TransactionsRepository.cs'
 builder.Services.AddTransient<ITransactionsRepository, TransactionsRepository>();
 
+// Servicios de la clase 'Services/ReportServices.cs'
+builder.Services.AddTransient<IReportServices, ReportServices>();
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,6 +48,10 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Para "favicon.ico"
+// href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-10.0"
+app.MapStaticAssets();
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -59,3 +67,4 @@ app.MapControllerRoute(
 
 
 app.Run();
+
