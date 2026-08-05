@@ -1,4 +1,6 @@
 using BudgetManagement.Services;
+using Google.Apis.Auth.AspNetCore3;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,39 @@ builder.Services.AddTransient<ITransactionsRepository, TransactionsRepository>()
 builder.Services.AddTransient<IReportServices, ReportServices>();
 builder.Services.AddHttpContextAccessor();
 
+// Servicios de la clase 'Services/CalendarRepository.cs'
+builder.Services.AddTransient<ICalendarRepository, CalendarRepository>();
+
+//////////////////
+// ExtraMile
+//////////////////
+
+// Lo siguiente evita que JavaScript serialice los valores de "Cuenta" y "Categoria" de
+// "Models/Transactions.cs" como camelCaes, haciendo que las variables inicien siempre con
+// minúscula debido a que siempre llama la librería 'System.Text.Json'
+// Esto cause que para el modal del calendario de FullCalendar, aparezcan como 'undefined'
+// Mantiene el casing original de C#
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+
+// Configuramos la llamada para el uso de Google Calendar en "Views/Transactions/Calendar.cshtml"
+builder.Services.AddAuthentication(o => { 
+    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogleOpenIdConnect(options => {
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    options.CallbackPath = "/signin-google";
+});
+
+//////////////////////////////////////////////////////////////////////
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,6 +94,10 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+// Agregamos al pipeline los metodos para que se registre el usuario para usar Google Calendar
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

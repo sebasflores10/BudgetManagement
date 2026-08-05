@@ -8,5 +8,10 @@
     ViewData["Title"] = "Reporte Transacciones";
 }
 
+<partial name="_Submenu" Model="TransactionsSubmenu.Diario" class="my-3" />
+
+<div>
+    <a asp-action="CreateTransaction" class="btn btn-success my-3">Crear transacción</a>
+</div>
 
 <partial name="_DetailedTransactionsReport" model="Model" />

@@ -1,0 +1,19 @@
+﻿@*
+    (Udemy): 158. Reporte Semanal - Vista [8:28 mins]
+*@
+
+@model DateTime
+
+<h4>
+    <a asp-route-month="@ViewBag.previous_month"
+       asp-route-year="@ViewBag.previous_year"
+       asp-route-account_id="@ViewBag.account_id"
+       class="btn btn-secondary"><i class="bi-chevron-left"></i></a>
+
+    @Model.ToString("MMM")-@Model.Year
+
+    <a asp-route-month="@ViewBag.month_later"
+       asp-route-year="@ViewBag.year_later"
+       asp-route-account_id="@ViewBag.account_id"
+       class="btn btn-secondary"><i class="bi-chevron-right"></i></a>
+</h4>

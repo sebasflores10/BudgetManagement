@@ -1,0 +1,64 @@
+﻿@*
+    (Udemy): 155. Creando un Submenú
+    (Udemy): 158. Reporte Semanal - Vista [Modificado]
+*@
+
+@model WeeklyReportViewModel
+
+@{
+    ViewData["Title"] = " Reporte Semanal";
+
+    string DateFormat(DateTime fecha)
+    {
+        return fecha.ToString("MM.dd");
+    }
+
+    var amountSummary = new AmountSummaryViewModel()
+    {
+        Ingreso = Model.Ingreso,
+        Egreso = Model.Egreso,
+        Total = Model.Total
+    };
+}
+
+
+<partial name="_Submenu" Model="TransactionsSubmenu.Semanal" />
+
+<div>
+    <a asp-action="CreateTransaction" class="btn btn-success my-3">Crear transacción</a>
+</div>
+
+<partial name="_MonthNav" model="@Model.dateReference" />
+
+<partial name="_AmountSummary" model="@amountSummary" />
+
+
+<table class="table table-responsive table-bordered table-hover" 
+style="font-size: 20px;">
+    <thead>
+        <th style="text-align: center">Semanas</th>
+        <th style="text-align: center">Ingresos</th>
+        <th style="text-align: center">Gastos</th>
+    </thead>
+
+    @foreach (var transactionsByWeek in Model.transactionResultByWeek)
+    {
+        <tr>
+            <td>
+                <a style="text-decoration: none" asp-action="Index"
+                asp-route-year="@Model.dateReference.Year"
+                asp-route-month="@Model.dateReference.Month">
+                    @DateFormat(transactionsByWeek.start_date) ~ @DateFormat(transactionsByWeek.end_date)
+                </a>
+            </td>
+
+            <td class="activos" style="text-align: right">
+                @transactionsByWeek.Ingreso
+            </td>
+
+            <td class="pasivos" style="text-align: right">
+                @transactionsByWeek.Egreso
+            </td>
+        </tr>
+    }
+</table>

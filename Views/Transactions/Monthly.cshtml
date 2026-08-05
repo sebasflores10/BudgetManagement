@@ -1,0 +1,73 @@
+﻿@*
+    (Udemy): 155. Creando un Submenú
+    (Udemy): 160. Reporte Mensual - Vista
+*@
+
+@model MonthlyReportViewModel
+
+@{
+    ViewData["Title"] = " Reporte Mensual";
+
+    @* Creamos las siguientes variables para poder navegar por año *@
+    int previousYear = Model.year - 1;
+    int yearLater = Model.year + 1;
+
+    @* Hacemos lo mismo, pero para los montos *@
+    var amountSummary = new AmountSummaryViewModel()
+    {
+        Ingreso = Model.Ingreso,
+        Egreso = Model.Egreso,
+        Total = Model.Total
+    };
+
+}
+
+<partial name="_Submenu" Model="TransactionsSubmenu.Mensual" />
+
+<div>
+    <a asp-action="CreateTransaction" class="btn btn-success my-3">Crear transacción</a>
+</div>
+
+<h4>
+    <a asp-route-year="@previousYear" class="btn btn-secondary">
+        <i class="bi-chevron-left"></i>
+    </a>
+    @Model.year
+    <a asp-route-year="@yearLater" class="btn btn-secondary">
+        <i class="bi-chevron-right"></i>
+    </a>
+</h4>
+
+<partial name="_AmountSummary" model="@amountSummary" />
+
+<table class="table table-responsive table-hover table-info" style="font-size: 20px;">
+    <thead>
+        <tr>
+            <th style="text-align: center">Mes</th>
+            <th style="text-align: right">Ingresos</th>
+            <th style="text-align: right">Gastos</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var transaction in Model.transactionsByMonth)
+        {
+            <tr>
+                <td>
+                    <a style="text-decoration: none" asp-action="Index"
+                    asp-route-year="@Model.year" asp-route-month="@transaction.Mes">
+                        @transaction.dateReference.ToString("MMMM")
+                    </a>
+                </td>
+
+                <td class="activos" style="text-align: right">
+                    @transaction.Ingreso
+                </td>
+
+                <td class="pasivos" style="text-align: right">
+                    @transaction.Egreso
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

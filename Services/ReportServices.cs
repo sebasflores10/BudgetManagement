@@ -5,6 +5,7 @@ namespace BudgetManagement.Services
 {
     public interface IReportServices
     {
+        Task<IEnumerable<TransactionResultByWeek>> GetTransactionResultByWeek(int user_id, int month, int year, dynamic ViewBag);
         Task<TransactionsDashboard> GetTransactionsReport(int user_id, int month, int year, dynamic ViewBag);
         Task<TransactionsDashboard> GetTransactionsReportByBudgetAccount(int user_id, int account_id, int month, int year, dynamic ViewBag);
     }
@@ -98,6 +99,37 @@ namespace BudgetManagement.Services
         }
 
 
+
+        /// <summary>
+        /// Método 'GetTransactionResultByWeek'
+        /// Permite al usuario poder visualizar sus transacciones por semana consultando
+        /// a la base de datos en la tabla [dbo].[transactions].
+        /// (Udemy): 156. Reporte Semanal - Query - Group By con DateDiff
+        /// </summary>
+        /// <param name="user_id">Parámetro que captura el ID del usuario</param>
+        /// <param name="month">Parámetro que captura el mes</param>
+        /// <param name="year">Parámetro que captura el año</param>
+        /// <param name="ViewBag">Parámetro que captura el ViewBag/etiquetas de los
+        /// atributos de las transacciones</param>
+        public async Task<IEnumerable<TransactionResultByWeek>> GetTransactionResultByWeek
+            (int user_id, int month, int year, dynamic ViewBag)
+        {
+            (DateTime start_date, DateTime end_date) = DateGenerator(month, year);
+
+            var userTransactions = new GetUserTransactionRequest()
+            {
+                user_id = user_id,
+                start_date = start_date,
+                end_date = end_date
+            };
+
+            PopulateViewBagNavigationDates(ViewBag, start_date);
+
+            var model = await _transactionsRepository
+                .GetTransactionResultsByWeek(userTransactions);
+
+            return model;
+        }
 
 
         ////////////////////////////////////////////////////////////////////////////////

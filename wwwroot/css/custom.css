@@ -80,3 +80,11 @@
 }
 
 
+/*********************************************************
+                   FullCalendar CSS
+     https://fullcalendar.io/docs/initialize-globals
+*********************************************************/
+#calendar {
+    max-width: 1100px;
+    margin: 40px auto;
+}

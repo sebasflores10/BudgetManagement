@@ -1,5 +1,6 @@
 ﻿@*
-    (Udemy): 153. Vista del Reporte Diario
+    1. (Udemy): 153. Vista del Reporte Diario
+    2. (Udemy): 158. Reporte Semanal - Vista [5:20 mins] [9:15 mins - _MonthNav]
     *************************************************************************************
     Creando la vista parcial para que el reporte que se realizó anteriormente en
     "Views/BudgetAccount/BudgetAccountDasboard.cshtml", pueda ser reutilizado tanto en 
@@ -8,49 +9,21 @@
 
 @model TransactionsDashboard
 
+@{
+    @* (Udemy): 158. Reporte Semanal - Vista [6:05 mins] *@
+    var amountSummary = new AmountSummaryViewModel()
+    {
+        Ingreso = Model.deposits_balance,
+        Egreso = Model.withdrawals_balance,
+        Total = Model.total
+    };
+}
 
-<h4>
-    <a asp-route-month="@ViewBag.previous_month"
-       asp-route-year="@ViewBag.previous_year"
-       asp-route-account_id="@ViewBag.account_id"
-       class="btn btn-secondary"><i class="bi-chevron-left"></i></a>
+@* Control de los meses fue movido a "Shared/_MonthNav.cshtml" *@
+<partial name="_MonthNav" model="@Model.start_date" />
 
-    @Model.start_date.ToString("MMM")-@Model.start_date.Year
-
-    <a asp-route-month="@ViewBag.month_later"
-       asp-route-year="@ViewBag.year_later"
-       asp-route-account_id="@ViewBag.account_id"
-       class="btn btn-secondary"><i class="bi-chevron-right"></i></a>
-</h4>
-
-<div class="total-div-container mb-3">
-    <div>
-        <div>
-            <strong>Depósitos</strong>
-        </div>
-        <div class="activos">
-            @Model.deposits_balance.ToString("N")
-        </div>
-    </div>
-
-    <div>
-        <div>
-            <strong>Retiros</strong>
-        </div>
-        <div class="pasivos">
-            @Model.withdrawals_balance.ToString("N")
-        </div>
-    </div>
-
-    <div>
-        <div>
-            <strong class="total-card-title">Total</strong>
-        </div>
-        <div class="total-card">
-            @Model.total.ToString("N")
-        </div>
-    </div>
-</div>
+@* Resumen del monto fue modificado a "Shared/_AmountSummary.cshtml" *@
+<partial name="_AmountSummary" model="@amountSummary" />
 
 @if (Model.transactions_by_date.Count() == 0)
 {

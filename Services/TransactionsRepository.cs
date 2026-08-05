@@ -10,8 +10,10 @@ namespace BudgetManagement.Services
         Task CreateTransaction(Transactions transactions);
         Task DeleteTransaction(int transaction_id);
         Task<Transactions> GetTransactionByID(int transaction_id, int user_id);
+        Task<IEnumerable<TransactionResultByWeek>> GetTransactionResultsByWeek(GetUserTransactionRequest model);
         Task<IEnumerable<Transactions>> GetTransactionsByBudgetAccount(GetTransactionsByBudgetAccount model);
         Task<IEnumerable<Transactions>> GetTransactionsByUserID(GetUserTransactionRequest model);
+        Task<IEnumerable<MonthlyResultSQL>> MonthlyTransactionsResult(int user_id, int year);
         Task UpdateTransaction(Transactions transactions, decimal previous_amount, int previous_account_id);
     }
 
@@ -264,6 +266,100 @@ namespace BudgetManagement.Services
             {
                 throw new ArgumentException($"Error while searching transaction for user ID " +
                     $"{model.user_id} | ", e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'GetTransactionResultsByWeek'
+        /// Permite consultar a la base de datos la cantidad de diferencias de semanas 
+        /// que en que se realizaron las transacciones en la tabla [dbo].[transactions] 
+        /// entre distintas fechas ("start_date" y "end_date") 
+        /// en la categoría donde se colecta.
+        /// (Udemy): 156. Reporte Semanal - Query - Group By con DateDiff
+        /// </summary>
+        /// <param name="model">Parámetro que captura el objeto 
+        /// "Models/TransactionResultByWee.cs""</param>
+        /// <returns>Devuelve una tabla de la base de datos con resultados en columnas:
+        /// [Semana, Monto, opration_type_id]</returns>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task<IEnumerable<TransactionResultByWeek>> GetTransactionResultsByWeek
+            (GetUserTransactionRequest model)
+        {
+            try
+            {
+                using var conn = new SqlConnection(databaseConnectionString);
+                return await conn.QueryAsync<TransactionResultByWeek>
+                    (@"SELECT 
+                        DATEDIFF(d ,@start_date, tra.transaction_date) / 7 + 1 AS Semana,
+                        SUM(amount) AS Monto,
+                        cat.operation_type_id
+                    FROM 
+                        [dbo].[transactions] tra
+                    INNER JOIN
+                        [dbo].[category] cat
+                    ON
+                        cat.category_id = tra.category_id
+                    WHERE
+                        tra.user_id = @user_id AND transaction_date
+                    BETWEEN
+                        @start_date AND @end_date
+                    GROUP BY
+                        DATEDIFF(d ,@start_date, tra.transaction_date) / 7,
+                        cat.operation_type_id
+                    ORDER BY
+                        Semana", model);
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException($"Error while searching transaction for user ID " +
+                    $"{model.user_id} | ", e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'MonthlyTransactionsResult
+        /// Permite consultar a la base de datos los reportes del usuario de las 
+        /// transacciones que realizó durante el mes en el año de la consulta del reporte.
+        /// Consulta la tabla [dbo].[transactions] haciendo un INNER JOIN con [dbo].[category]
+        /// (Udemy): 159. Reporte Mensual - Query
+        /// </summary>
+        /// <param name="user_id">Parámetro que captura el ID del usuario</param>
+        /// <param name="year">Parámetro que captura el año</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task<IEnumerable<MonthlyResultSQL>> MonthlyTransactionsResult
+            (int user_id, int year)
+        {
+            try
+            {
+                using var conn = new SqlConnection(databaseConnectionString);
+                return await conn.QueryAsync<MonthlyResultSQL>
+                    (@"SELECT 
+                        MONTH(tra.transaction_date) AS Mes,
+                        SUM(tra.amount) AS Monto,
+                        cat.operation_type_id
+                    FROM
+                        [dbo].[transactions] tra
+                    INNER JOIN
+                        [dbo].[category] cat
+                    ON
+                        cat.category_id = tra.category_id
+                    WHERE
+                        tra.user_id = @user_id AND YEAR(transaction_date) = @year
+                    GROUP BY
+                        MONTH(tra.transaction_date), cat.operation_type_id",
+                    new { user_id, year });
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException($"Error while searching transaction for user ID " +
+                    $"{user_id} | ", e.Message);
             }
         }
     }

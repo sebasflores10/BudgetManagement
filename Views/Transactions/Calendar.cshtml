@@ -1,0 +1,156 @@
+﻿@*
+    (Udemy): 155. Creando un Submenú
+*@
+
+@{
+    ViewData["Title"] = "Calendario";
+}
+
+<partial name="_Submenu" Model="TransactionsSubmenu.Calendario" />
+
+<div id="calendar" class="text-center"></div>
+
+@* 
+Para el siguiente "div" - (Udemy): 167. Mostrando un Modal con las Transacciones del Día 
+Uso de JavaScript es el motor de la interacción con el modal.
+*@
+<div id="transactionsModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Transacciones del día</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <table class="table table-responsive table-warning table-hover">
+                    <thead>
+                        <tr>
+                            <th id="modalDateTable" colspan="2"></th>
+
+                            <th id="modalIngresoTable" class="activos"></th>
+
+                            <th id="modalEgresoTable" class="pasivos"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="modalTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/skeleton.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/themes/monarch/theme.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/themes/monarch/palettes/purple.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/all/global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/themes/monarch/global.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentDate = new Date();
+            const ym = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+            const calendarEl = document.getElementById('calendar');
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                initialDate: `${ym}-07`,
+                locale: 'es',
+                dayMaxEventRows: 3,
+                editable: true,
+                selectable: true,
+                // colorScheme: 'light',
+
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+
+                events: `@Url.Action("GetTransactionsToFullCalendar")`,
+
+                dateClick: async function(info) // Utilizamos async por ser petición HTTP
+                {
+                    // console.log(info);
+                    // const title = prompt("Ingrese el título del evento:");
+
+                    await GetTransactionsByDateInFullCalendar(info.dateStr);
+                    // if(title)
+                    // {
+                    //     calendar.addEvent({
+                    //         title,
+                    //         start: info.date,
+                    //         allDay: true
+                    //     });
+                    // }
+                }
+            });
+
+            calendar.render();
+        }); 
+
+        async function GetTransactionsByDateInFullCalendar(date)
+        {
+            const url = `@Url.Action("GetTransactionsByDateInFullCalendar")?date=${date}`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            console.log(data);
+
+
+            let incomes = 0;
+            let expenses = 0;
+            const incomesOperationType = 1;
+            const currencyFormat = new Intl.NumberFormat('en-Us', {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+            // Usamos la variable 'data' para iniciar el mapeo.
+            // Si se usa otra variable, el error que se generar es:
+            // "Uncaught (in promise) ReferenceError: json is not defined"
+            const rows = data.map(transactions => {
+                if(transactions.operation_type_id === incomesOperationType){
+                    incomes += transactions.amount;
+                } else {
+                    expenses += transactions.amount;
+                }
+
+                return `<tr>
+                    <td>${transactions.Categoria}</td>
+                    <td>${transactions.Cuenta}</td>
+                    <td align="right" colspan="2" 
+                    class=${transactions.operation_type_id === incomesOperationType} ? 'activos' : 'pasivos'>
+                        ${currencyFormat.format(transactions.amount)}
+                    </td>
+                </tr>`;
+            });
+
+            console.log(rows);
+
+            $("#modalTableBody").html(rows.join(''));
+            $("#modalIngresoTable").html(currencyFormat.format(incomes));
+            $("#modalEgresoTable").html(currencyFormat.format(expenses));
+            $("#modalDateTable").html(date);
+
+
+            const transactionsModal = new bootstrap
+                .Modal(document.getElementById('transactionsModal'));
+
+            transactionsModal.show();
+
+        }
+    </script>
+}

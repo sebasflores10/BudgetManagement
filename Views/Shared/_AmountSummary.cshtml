@@ -1,0 +1,34 @@
+﻿@*
+    (Udemy): 158. Reporte Semanal - Vista
+*@
+
+@model AmountSummaryViewModel
+
+<div class="total-div-container mb-3">
+    <div>
+        <div>
+            <strong>Depósitos</strong>
+        </div>
+        <div class="activos">
+            @Model.Ingreso.ToString("N")
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <strong>Retiros</strong>
+        </div>
+        <div class="pasivos">
+            @Model.Egreso.ToString("N")
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <strong class="total-card-title">Total</strong>
+        </div>
+        <div class="total-card">
+            @Model.Total.ToString("N")
+        </div>
+    </div>
+</div>
