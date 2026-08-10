@@ -31,7 +31,7 @@ function TransactionsInitForms(urlGetCategories){
             options = `<option>No se encontraron aún registros de categorías</option>`;
         } else {
             options = json.map(category =>
-                `<option value="${category.value}">${category.text}</option>`);
+                `<option value="${category.Value}">${category.Text}</option>`);
         }
 
         $("#category_id").html(options);

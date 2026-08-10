@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Bibliography;
 using Google.Apis.Auth.AspNetCore3;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data;

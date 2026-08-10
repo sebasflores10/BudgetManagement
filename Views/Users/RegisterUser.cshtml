@@ -1,0 +1,40 @@
+﻿@*
+    (Udemy): 171. Formulario de Registro
+*@
+
+@model RegisterUserViewModel
+
+@{
+    ViewData["Title"] = "Registro de usuario";
+}
+
+
+<h1 class="mb-4">Registro de usuario</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="RegisterUser" class="mb-2" id="formRegisterUser">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="email" class="control-label"></label>
+                <input asp-for="email" class="form-control" />
+                <span asp-validation-for="email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="password" class="control-label"></label>
+                <input asp-for="password" class="form-control" />
+                <span asp-validation-for="password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrar</button>    
+            <a asp-action="UserLogin" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover mx-2">Iniciar sesión</a>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

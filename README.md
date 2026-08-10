@@ -23,7 +23,7 @@ A personal budget management web application built with **ASP.NET Core MVC** and
 
 ## 📌 Overview
 
-ManejoPresupuestos is a full-stack budget tracking application that allows users to manage their personal finances. Users can create account types (e.g. savings, credit cards, loans), manage accounts, log transactions, and organize spending by category. This would be the database system managing all relevant information related to budgets, users, reporting, accounts, among others.
+BudgetManagement is a full-stack budget tracking application that allows users to manage their personal finances. Users can create account types (e.g. savings, credit cards, loans), manage accounts, log transactions, and organize spending by category. This would be the database system managing all relevant information related to budgets, users, reporting, accounts, among others.
 
 ---
 
@@ -106,7 +106,6 @@ FOREIGN KEYS
 
 1. **Clone the repository**
    ```bash
-   mkdir BudgetManagement
    git clone https://github.com/sebasflores10/BudgetManagement.git
    ```
 

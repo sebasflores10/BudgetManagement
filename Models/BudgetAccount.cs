@@ -8,6 +8,7 @@ namespace BudgetManagement.Models
     /// </summary>
     public class BudgetAccount
     {
+        [Range(1, int.MaxValue, ErrorMessage = "El ID de la cuenta es entre {1} y {2}")]
         public int account_id { get; set; }
         
         [Required(ErrorMessage = "El nombre de la cuenta es requerido")]
@@ -27,7 +28,7 @@ namespace BudgetManagement.Models
             ErrorMessage = "El balance permitido a nivel de sistema debe ser entre {1} y {2}")]
         public decimal account_balance { get; set; }
 
-        [Required(ErrorMessage = "El nombre de la cuenta es requerido")]
+        [Required(ErrorMessage = "La descripción es requerida")]
         [StringLength(maximumLength: 100,
             ErrorMessage = "La descripción de la cuenta debe ser un máximo de 100 caracteres")]
         [Display(Name = "Descripción")]

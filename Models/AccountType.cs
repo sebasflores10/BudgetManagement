@@ -9,7 +9,9 @@ namespace BudgetManagement.Models
     /// </summary>
     public class AccountType /*: IValidatableObject*/
     {
+        [Range(1, int.MaxValue, ErrorMessage = "El ID del tipo de cuenta debe ser entre {1} y {2}")]
         public int account_type_id { get; set; }
+        
         [Required(ErrorMessage = "El nombre del tipo de cuenta es requerido")]
         [Display(Name = "Nombre del tipo de cuenta")]
         [StringLength(maximumLength: 50, MinimumLength = 3,
@@ -17,6 +19,8 @@ namespace BudgetManagement.Models
         [FirstCapitalWord] // (Udemy): 107. Validaciones Personalizadas por Atributo
         [Remote(action: "VerifyAccountTypeExist", controller: "AccountType")] // (Udemy): Validaciones Personalizadas con JavaScript Utilizando Remote
         public string account_type_name { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "El límite de usuarios ha sido excedido")]
         public int user_id { get; set; }
         public int user_order { get; set; }
         public bool? account_type_exist { get; set; }

@@ -1,11 +1,26 @@
+using System.Globalization;
+using BudgetManagement.Models.Data;
 using BudgetManagement.Services;
 using Google.Apis.Auth.AspNetCore3;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// (Udemy): 179. Atributo Authorize [4:15 mins]
+var userAuthPolicy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AuthorizeFilter(userAuthPolicy));
+});
 
 // Añadiendo el nuevo bulder.Service para "Services/AccountTypeRepository.cs"
 // Usamos el servicio 'Transient' debido a que el repositorio no comparte datos.
@@ -44,6 +59,21 @@ builder.Services.AddHttpContextAccessor();
 // Servicios de la clase 'Services/CalendarRepository.cs'
 builder.Services.AddTransient<ICalendarRepository, CalendarRepository>();
 
+// Servicios de la clase 'Services/UserRepository.cs'
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IUserStore<User>, UserStore>();
+builder.Services.AddIdentityCore<User>().AddErrorDescriber<TranslateIdentityErrorsToSpanish>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme;
+}).AddCookie(IdentityConstants.ApplicationScheme).AddCookie(optionsURL =>
+{
+    optionsURL.LoginPath = "/Users/Login";
+});
+builder.Services.AddTransient<SignInManager<User>>();
+
 //////////////////
 // ExtraMile
 //////////////////
@@ -59,18 +89,29 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
-// Configuramos la llamada para el uso de Google Calendar en "Views/Transactions/Calendar.cshtml"
-builder.Services.AddAuthentication(o => { 
-    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie()
-.AddGoogleOpenIdConnect(options => {
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    options.CallbackPath = "/signin-google";
+
+builder.Services.ConfigureApplicationCookie(options => 
+{
+    options.LoginPath = "/Users/UserLogin";
+    options.LogoutPath = "/Users/UserLogin";
+    options.AccessDeniedPath = "/Users/UserLogin";
 });
+
+
+
+// Configuramos la llamada para el uso de Google Calendar en "Views/Transactions/Calendar.cshtml"
+//builder.Services.AddAuthentication(options => { 
+//    options.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+//    options.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//})
+//.AddCookie()
+//.AddGoogleOpenIdConnect(options => {
+//    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+//    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+//    options.CallbackPath = "/signin-google";
+//});
+
 
 //////////////////////////////////////////////////////////////////////
 
@@ -91,13 +132,29 @@ app.MapStaticAssets();
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// Agregamos al pipeline los metodos para que se registre el usuario para usar Google Calendar
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
 
-// Agregamos al pipeline los metodos para que se registre el usuario para usar Google Calendar
-app.UseAuthentication();
-app.UseAuthorization();
+// La siguiente línea de código permite que la aplicación pueda usar el idioma
+// español (Costa Rica) para la localización de fechas, monedas, etc.
+// Valida el campo de la contraseña del usuario en "Views/Users/RegisterUser.cshtml"
+// y "Views/Users/LoginUser.cshtml"
+//var supportedCultures = new[] { "es", "es-CR" };
+//app.UseRequestLocalization(new RequestLocalizationOptions
+//{
+//    DefaultRequestCulture = new RequestCulture("es-CR"),
+//    SupportedCultures = new List<CultureInfo>
+//        {
+//            new CultureInfo("es-CR")
+//        },
+//    SupportedUICultures = new List<CultureInfo>
+//        {
+//            new CultureInfo("es-CR")
+//        } 
+//});
 
 app.MapControllerRoute(
     name: "default",

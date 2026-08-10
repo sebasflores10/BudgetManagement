@@ -17,18 +17,19 @@ namespace BudgetManagement.Models
         [Display(Name = "Fecha de la transacción")]
         public DateTime transaction_date { get; set; } = DateTime.Today;
 
-        [Required(ErrorMessage = "El monto es requerido")]
+        [Required(ErrorMessage = "El monto de la transacción es requerido")]
         [Range(typeof(decimal), "-999999999999.99", "999999999999.99",
             ErrorMessage = "El monto permitido a nivel de sistema debe ser entre {1} y {2}")]
         [Display(Name = "Monto de transacción")]
         public decimal amount { get; set; }
-        
+
+        [Required(ErrorMessage = "Las notas de la transacción son requeridas")]
         [StringLength(maximumLength: 200,
             ErrorMessage = "La cantidad máxima de caracteres es de {1}")]
         [Display(Name = "Notas")]
         public string notes { get; set; }
         
-        [Display(Name = "Cuenta")]
+        [Display(Name = "Cuenta")] // Para "Views/Transactions/CreateTransaction.cshtml" y "Views/Transactions/UpdateTransaction.cshtml"
         [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una cuenta")]
         public int account_id { get; set; }
         

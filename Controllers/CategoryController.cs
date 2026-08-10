@@ -1,5 +1,6 @@
 ﻿using BudgetManagement.Models;
 using BudgetManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetManagement.Controllers
