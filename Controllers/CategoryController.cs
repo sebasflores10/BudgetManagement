@@ -1,4 +1,5 @@
 ﻿using BudgetManagement.Models;
+using BudgetManagement.Models.ViewModels;
 using BudgetManagement.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,13 +27,25 @@ namespace BudgetManagement.Controllers
         /// Permite mostrar al usuario en una tabla de la página principal de 
         /// "Models/Category.cs" todas las categorías del usuario.
         /// (Udemy): 135. Índice de Categorías
+        /// (Udemy): 184. Paginación - Back-End - Query [6:45 mins]
+        /// (Udemy): 185. Paginación - Contando los Registros [5:50 mins]
+        /// (Udemy): 189. Paginación - Usando el IUrlHelper
         /// </summary>
         /// <returns>Muestra al usuario la vista "Views/Category/Index.cshtml"</returns>
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginationViewModel pagination)
         {
             var user_id = _userService.GetUserID();
-            var category = await _categoryRepository.GetUserCategory(user_id);
-            return View(category);
+            var category = await _categoryRepository.GetUserCategory(user_id, pagination);
+            var userTotalCategories = await _categoryRepository.CountUserCategories(user_id);
+            var paginationResponse = new PaginationResponseViewModel<Category>
+            {
+                elements = category,
+                page = pagination.page,
+                records_by_page = pagination.total_records,
+                total_records = userTotalCategories,
+                url = Url.Action() // IUrlHelper
+            };
+            return View(paginationResponse);
         }
 
 
@@ -41,11 +54,13 @@ namespace BudgetManagement.Controllers
         /// Permite al mostrarle al usuario la vista de crear categoría
         /// "Views/Category/CreateCategory.cshtml"
         /// (Udemy): 133. Creando Categorías
+        /// (Udemy): 189. Paginación - Usando el IUrlHelper
         /// </summary>
         /// <returns>Muestra la vista "Views/Category/CreateCategory.cshtml" al usuario</returns>
         [HttpGet]
         public IActionResult CreateCategory()
         {
+            var actualURL = Url.Action();
             return View();
         }
 
@@ -172,6 +187,30 @@ namespace BudgetManagement.Controllers
 
             await _categoryRepository.DeleteCategory(category_id);
             return RedirectToAction("Index");
+        }
+
+
+        /// <summary>
+        /// Método 'VerifyingCategoryExist'
+        /// Permite valorar y verificar que el usuario sepa de categorías que ya existen.
+        /// </summary>
+        /// <param name="category_name">Parámetro que captura el nombre de la categoría</param>
+        /// <param name="operation_type_id">Parámetro que captura el ID del tipo de operación</param>
+        /// <returns>Devuelve un mensaje al usuario de la categoría que ya existe en su sesión</returns>
+        public async Task<IActionResult> VerifyingCategoryExist(string category_name,
+            OperationType operation_type_id)
+        {
+
+            var user_id = _userService.GetUserID();
+            var exist = await _categoryRepository
+                .CategoryExist(category_name, user_id, operation_type_id);
+
+            if (exist)
+            {
+                return Json($"La categoría {category_name} de tipo {operation_type_id} ya existe");
+            }
+
+            return Json(true);
         }
     }
 }

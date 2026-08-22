@@ -1,4 +1,5 @@
 ﻿using BudgetManagement.Models;
+using BudgetManagement.Models.ViewModels;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Security.Principal;
@@ -7,11 +8,13 @@ namespace BudgetManagement.Services
 {
     public interface ICategoryRepository
     {
+        Task<bool> CategoryExist(string category_name, int user_id, OperationType operation_type_id);
+        Task<int> CountUserCategories(int user_id);
         Task CreateCategory(Category category);
         Task DeleteCategory(int category_id);
         Task EditCategory(Category category);
         Task<Category> GetCategoryByID(int category_id, int user_id);
-        Task<IEnumerable<Category>> GetUserCategory(int user_id);
+        Task<IEnumerable<Category>> GetUserCategory(int user_id, PaginationViewModel pagination);
         Task<IEnumerable<Category>> GetUserOperationTypeTransaction(int user_id, OperationType operation_type_id);
     }
 
@@ -65,18 +68,31 @@ namespace BudgetManagement.Services
         /// <summary>
         /// Método 'GetUserCategory'
         /// Permite consultar las categorías del usuario a la base de datos.
-        /// (Udemy): Índice de Categorías.
+        /// (Udemy): 135. Índice de Categorías.
+        /// (Udemy): 184. Paginación - Back-End - Query [Feature de paginación a "Views/Category.Index.cshtml"]
         /// </summary>
         /// <param name="user_id">Parámetro que captura el ID del usuario</param>
         /// <exception cref="ArgumentException">Excepción que permite capturar
         /// el dato que falló a la hora de actualizar</exception>
-        public async Task<IEnumerable<Category>> GetUserCategory(int user_id)
+        public async Task<IEnumerable<Category>> GetUserCategory
+            (int user_id, PaginationViewModel pagination)
         {
             try
             {
                 using var conn = new SqlConnection(databaseConnectionString);
                 return await conn.QueryAsync<Category>(
-                    @"SELECT * FROM [dbo].[category] WHERE user_id = @user_id",
+                    @$"SELECT * 
+                    FROM 
+                        [dbo].[category] 
+                    WHERE 
+                        user_id = @user_id
+                    ORDER BY
+                        category_name
+                    OFFSET 
+                        {pagination.jumping_records}
+                    ROWS FETCH NEXT
+                        {pagination.total_records}
+                    ROWS ONLY",
                     new { user_id });
             }
 
@@ -142,7 +158,7 @@ namespace BudgetManagement.Services
             catch (Exception e)
             {
                 throw new ArgumentException(@$"Error while editing {category.category_name} " +
-                    "category with ID {category.category_id} |", e.Message);
+                    $"and category with ID {category.category_id} |", e.Message);
             }
         }
 
@@ -202,6 +218,68 @@ namespace BudgetManagement.Services
             {
                 throw new ArgumentException("Error while retrieving user operation type " +
                     $"{operation_type_id} for its categories |",e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'CountUserCategories'
+        /// Permite consultar en la base de datos la tabla [dbo].[categories] y contar
+        /// el total de categorías que posee el usuario.
+        /// (Udemy): 185. Paginación - Contando los Registros
+        /// </summary>
+        /// <param name="user_id">Parámetro que captura el ID del usuario</param>
+        /// <returns>Devuelve la cantidad total de categorías que posee un usuario</returns>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task<int> CountUserCategories(int user_id)
+        {
+            try
+            {
+                using var conn = new SqlConnection(databaseConnectionString);
+                return await conn.ExecuteScalarAsync<int>(
+                    @"SELECT COUNT(*)
+                    FROM [dbo].[category] 
+                    WHERE user_id = @user_id", new { user_id });
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException("Error while counting user's categories |", 
+                    e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'CategoryExist'
+        /// Permite consultar a la base de datos para verificar en la tabla [dbo].[category]
+        /// si la categoría que el usuario desea crear, ya existe en los records.
+        /// </summary>
+        /// <param name="category_name">Parámetro que captura el nombre de la categoría</param>
+        /// <param name="user_id">Parámetro que captura el ID del usuario</param>
+        /// <param name="operation_type_id">Parámetro que captura el ID del tipo de operación</param>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task<bool> CategoryExist(string category_name, 
+            int user_id, OperationType operation_type_id)
+        {
+            try
+            {
+                using var conn = new SqlConnection(databaseConnectionString);
+                var exist = await conn.QueryFirstOrDefaultAsync<int>
+                    (@"SELECT 1 AS category_exist FROM [dbo].[category] 
+                    WHERE category_name = @category_name
+                    AND operation_type_id = @operation_type_id
+                    AND user_id = @user_id;", new { category_name, user_id, operation_type_id });
+
+                return exist == 1;
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException("An error occurred while looking for " +
+                    $"category {category_name} |", e.Message);
             }
         }
     }

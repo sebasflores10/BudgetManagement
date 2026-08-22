@@ -62,7 +62,9 @@ builder.Services.AddTransient<ICalendarRepository, CalendarRepository>();
 // Servicios de la clase 'Services/UserRepository.cs'
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IUserStore<User>, UserStore>();
-builder.Services.AddIdentityCore<User>().AddErrorDescriber<TranslateIdentityErrorsToSpanish>();
+builder.Services.AddIdentityCore<User>()
+    .AddErrorDescriber<TranslateIdentityErrorsToSpanish>()
+    .AddDefaultTokenProviders(); // Para olvidos de contraseña
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
@@ -73,6 +75,7 @@ builder.Services.AddAuthentication(options =>
     optionsURL.LoginPath = "/Users/Login";
 });
 builder.Services.AddTransient<SignInManager<User>>();
+builder.Services.AddTransient<IForgotPassword, ForgotPassword>();
 
 //////////////////
 // ExtraMile

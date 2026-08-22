@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace BudgetManagement.Controllers
 {
@@ -16,14 +18,20 @@ namespace BudgetManagement.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IUserService _userService;
+        private readonly IForgotPassword _forgotPassword;
+        private readonly IUserRepository _userRepository;
 
         public UsersController(UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IUserService userService)
+            IUserService userService,
+            IForgotPassword forgotPassword,
+            IUserRepository userRepository)
         {
             this._userManager = userManager;
             this._signInManager = signInManager;
             this._userService = userService;
+            this._forgotPassword = forgotPassword;
+            this._userRepository = userRepository;
         }
 
 
@@ -163,6 +171,131 @@ namespace BudgetManagement.Controllers
         {
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
             return RedirectToAction("Index", "Transactions");
+        }
+
+
+
+        /// <summary>
+        /// Método 'ForgotPassword'
+        /// Permite mostrar al usuario la vista "Views/Users/ForgotPassword.cshtml" para
+        /// realizar acciones de olvido de contraseñas.
+        /// (Udemy): 193. ¿Olvidó su Contraseña? - Generando el Código Secreto
+        /// </summary>
+        /// <param name="message">Parámetro que muestra el mensaje del olvido de contraseña
+        /// al usuario</param>
+        /// <returns>Muestra la vista "Views/Users/ForgotPassword.cshtml" al usuario</returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword(string message = "")
+        {
+            ViewBag.Message = message;
+            return View();
+        }
+
+
+        /// <summary>
+        /// Método 'ForgotPassword'
+        /// Permite al usuario realizar la acción de reinicio de contraseña.
+        /// (Udemy): 193. ¿Olvidó su Contraseña? - Generando el Código Secreto
+        /// </summary>
+        /// <param name="model">Parámetro que captura el objeto 
+        /// "Models/ViewModels/ForgotPasswordViewModel.cs"</param>
+        /// <returns>Muestra la vista principal "Views/Users/ForgotPassword.cshtml"</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            var message = "Listo. Revise su bandeja de entrada o inbox donde encontrará los siguientes pasos para la recuperación de su contraseña.";
+            ViewBag.Message = message;
+            ModelState.Clear();
+
+            var user = await _userManager.FindByEmailAsync(model.email);
+
+            if (user is null)
+            {
+                return View();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var tokenBase64 = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var link = Url.Action("ResetPassword", "Users", new { token = tokenBase64 },
+                protocol: Request.Scheme);
+            await _forgotPassword.SendEmailToChangePassword(model.email, link);
+            return View();
+        }
+
+
+
+        /// <summary>
+        /// Método 'ResetPassword'
+        /// Permite al usuario poder obtener un token que le permita poder reiniciar
+        /// su contraseña. Utiliza la clase "Models/ViewModels/PasswordResetViewModel.cs"
+        /// (Udemy): 194. ¿Olvidó su Contraseña? - Permitiendo el Cambio de Contraseña
+        /// </summary>
+        /// <param name="code">Parámetro que captura el token de reinicio de contraseña</param>
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token = null)
+        {
+            if(token is null)
+            {
+                var message = "Token no encontrado";
+                return RedirectToAction("ForgotPassword", new { message });
+            }
+
+            var model = new PasswordResetViewModel();
+            model.token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            return View(model);
+        }
+
+
+        /// <summary>
+        /// Método 'ResetPassword'
+        /// Permite la acción del cambio de contraseña del usuario por medio del uso de
+        /// un token.
+        /// (Udemy): 194. ¿Olvidó su Contraseña? - Permitiendo el Cambio de Contraseña
+        /// </summary>
+        /// <param name="model">Parámetro que captura el objeto 
+        /// "Models/ViewModels/PasswordResetViewModel.cs"</param>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(PasswordResetViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.email);
+
+            if (user is null) 
+            {
+                ModelState.AddModelError(string.Empty, "El email no es válido");
+                return View(model); 
+            }
+
+            var results = await _userManager.ResetPasswordAsync(user, model.token, model.password);
+
+            if (!results.Succeeded)
+            {
+                foreach(var error in results.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(model);
+            }
+
+            return RedirectToAction("PasswordChanged");
+        }
+
+
+        /// <summary>
+        /// Método 'PasswordChanged'
+        /// Muestra la vista al usuario con un mensaje exitoso del cambio de contraseña.
+        /// (Udemy): 194. ¿Olvidó su Contraseña? - Permitiendo el Cambio de Contraseña
+        /// </summary>
+        /// <returns>Muestra la vista "Views/Users/PasswordChanged.cshtml"</returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult PasswordChanged()
+        {
+            return View();
         }
     }
 }

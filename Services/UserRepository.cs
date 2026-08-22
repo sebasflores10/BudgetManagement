@@ -11,6 +11,7 @@ namespace BudgetManagement.Services
         //Task CreateUserAsync(Models.Data.User user);
         Task<int> CreateUserAsync(User user);
         Task<User> GetUserByEmailAsync(string email);
+        Task UpdateUser(User user);
     }
 
     /// <summary>
@@ -89,6 +90,36 @@ namespace BudgetManagement.Services
             catch (Exception e)
             {
                 throw new ArgumentException($"Error while creating user with email {email} | ",
+                    e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Método 'UpdateUser'
+        /// Permite actualizar la información del usuario a la base de datos en la tabla
+        /// [dbo].[users] cuando ocurre algún reinicio de contraseña, por ejemplo.
+        /// (Udemy): 194. ¿Olvidó su Contraseña? - Permitiendo el Cambio de Contraseña
+        /// </summary>
+        /// <param name="user">Parámetro que captura el objeto "Models/Data/User.cs"</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Excepción que permite capturar
+        /// el dato que falló a la hora de actualizar</exception>
+        public async Task UpdateUser(User user)
+        {
+            try
+            {
+                using var connection = new SqlConnection(databaseConnectionString);
+                await connection.ExecuteAsync("sp_update_user", new
+                {
+                    user.user_id,
+                    user.password_hash
+                }, commandType: System.Data.CommandType.StoredProcedure);
+            }
+
+            catch (Exception e)
+            {
+                throw new ArgumentException($"Error while updating user {user.email} | ",
                     e.Message);
             }
         }

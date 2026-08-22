@@ -312,6 +312,7 @@ namespace BudgetManagement.Controllers
         /// operación [1 = Ingreso | 2 = Egreso] en el "<select></select>" de las vistas
         /// "Views/Transactions/CreateTransaction.cshtml" y "Views/Transactions/EditTransaction.cshtml"
         /// (Udemy): 141. DropDown Cascada
+        /// (udemy): 190. Valor por Defecto de un DropDown List [Modificado]
         /// </summary>
         /// <param name="user_id">Parámetro que captura el ID del usuario</param>
         /// <param name="operation_type_id">Parámetro que captura el ID del tipo de operación</param>
@@ -321,8 +322,14 @@ namespace BudgetManagement.Controllers
             var categories = await _categoryRepository
                 .GetUserOperationTypeTransaction(user_id, operation_type_id);
 
-            return categories.Select(x => 
-                new SelectListItem(x.category_name, x.category_id.ToString()));
+            var result = categories.Select(x => 
+                new SelectListItem(x.category_name, x.category_id.ToString())).ToList();
+
+            var selectListItemDefault = new SelectListItem("-- Seleccione una categoría --", "0", true);
+
+            result.Insert(0, selectListItemDefault);
+
+            return result;
         }
 
 

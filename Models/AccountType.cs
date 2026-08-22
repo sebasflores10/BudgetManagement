@@ -9,7 +9,7 @@ namespace BudgetManagement.Models
     /// </summary>
     public class AccountType /*: IValidatableObject*/
     {
-        [Range(1, int.MaxValue, ErrorMessage = "El ID del tipo de cuenta debe ser entre {1} y {2}")]
+        [Range(1, int.MaxValue, ErrorMessage = "El tipo de cuenta ha excedido el límite")]
         public int account_type_id { get; set; }
         
         [Required(ErrorMessage = "El nombre del tipo de cuenta es requerido")]

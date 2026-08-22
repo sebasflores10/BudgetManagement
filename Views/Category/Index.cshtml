@@ -2,7 +2,7 @@
     (Udemy): Índice de Categorías
 *@
 
-@model IEnumerable<Category>
+@model PaginationResponseViewModel<Category>
 
 @{
     ViewData["Title"] = "Categorías";
@@ -14,7 +14,23 @@
     de dónde provienen los ingresos.
 </h5>
 
+<h2>Total de categorías: @Model.total_records | Cantidad de páginas: @Model.total_amount_pages</h2>
+
 <a asp-action="CreateCategory" class="btn btn-primary mb-4">Crear categoría</a>
+
+<div class="row">
+    <label>Registros</label>
+    <div class="mb-3 col-auto">
+        <select asp-for="records_by_page" id="amountRecordsByPage" class="form-select">
+            <option>5</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+        </select>
+    </div>
+</div>
+
+<partial name="_Pagination" />
 
 <table class="table table-hover table-responsive table-primary">
     <thead>
@@ -26,7 +42,7 @@
     </thead>
 
     <tbody>
-        @foreach(var category in Model)
+        @foreach(var category in Model.elements)
         {
             <tr>
                 <td>
@@ -47,3 +63,12 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        $("#amountRecordsByPage").change(function(){
+            const recordsByPage = $(this).val();
+            location.href = `/Category/?page=1&total_records=${recordsByPage}`;
+        });
+    </script>
+}

@@ -1,0 +1,62 @@
+﻿@*
+    (Udemy): 185. Paginación - Contando los Registros
+    (Udemy): 186. Paginación - Control de Paginación - Operador Ternario en Razor
+    (Udemy): 187. Paginación - Botones de Anterior y Siguiente
+    (Udemy): 188. Paginación - Cambiar Cantidad Registros a Mostrar
+    (Udemy): 189. Paginación - Usando el IUrlHelper
+*@
+
+
+@model PaginationResponseViewModel
+
+
+@{
+    var link = string.Concat(Model.url, "?page={0}&total_records={1}");
+    var previousButtonActiveValidation = Model.page > 1;
+    var nextButtonActiveValidation = Model.page < Model.total_amount_pages;
+}
+
+
+
+<nav>
+    <ul class="pagination">
+        @* (Udemy): 187. Paginación - Botones de Anterior y Siguiente *@
+        <li class="page-item @(previousButtonActiveValidation ? null : "disabled")">
+            @if (previousButtonActiveValidation)
+            {
+                <a class="page-link" href="@string.Format(link, Model.page - 1, Model.records_by_page)">
+                    <i class="bi-chevron-left"></i>
+                </a>
+            }
+            else
+            {
+                <span class="page-link"><i class="bi-chevron-left"></i></span>
+            }
+        </li>
+
+        @for (var pageNumber = 1; pageNumber <= Model.total_amount_pages; pageNumber++)
+        {
+            <li class="page-item @(pageNumber == Model.page ? "active" : null)">
+                <a class="page-link" href="@string.Format(link, pageNumber, Model.records_by_page)">
+                    @pageNumber
+                </a>
+            </li>
+        }
+
+        @* (Udemy): 187. Paginación - Botones de Anterior y Siguiente *@
+        <li class="page-item @(nextButtonActiveValidation ? null : "disabled")">
+            @if (nextButtonActiveValidation)
+            {
+                <a class="page-link" href="@string.Format(link, Model.page + 1, Model.records_by_page)">
+                    <i class="bi-chevron-right"></i>
+                </a>
+            }
+            else
+            {
+                <span class="page-link"><i class="bi-chevron-right"></i></span>
+            }
+        </li>
+
+    </ul>
+</nav>
+
