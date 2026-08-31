@@ -1,4 +1,5 @@
-﻿using BudgetManagement.Models;
+﻿using BudgetManagement.Models.Data;
+using BudgetManagement.Models.Entities;
 using System.Security.Principal;
 
 namespace BudgetManagement.Services

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.Data
 {
     /// <summary>
     /// (Udemy): 100. Formulario Tipo Cuentas

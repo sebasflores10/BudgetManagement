@@ -1,4 +1,5 @@
-﻿using BudgetManagement.Models;
+﻿using BudgetManagement.Models.Data;
+using BudgetManagement.Models.Enums;
 using BudgetManagement.Models.ViewModels;
 using BudgetManagement.Services;
 using Microsoft.AspNetCore.Authorization;

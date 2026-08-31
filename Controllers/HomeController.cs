@@ -1,4 +1,4 @@
-using BudgetManagement.Models;
+using BudgetManagement.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

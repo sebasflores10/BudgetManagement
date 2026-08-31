@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using BudgetManagement.Models.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.ViewModels
 {
     /// <summary>
     /// (Udemy): 138. Creando Transacciones

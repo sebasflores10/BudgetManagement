@@ -1,4 +1,4 @@
-﻿using BudgetManagement.Models;
+﻿using BudgetManagement.Models.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Security.Principal;

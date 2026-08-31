@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
-using BudgetManagement.Models;
+using BudgetManagement.Models.Data;
+using BudgetManagement.Models.Entities;
+using BudgetManagement.Models.Enums;
+using BudgetManagement.Models.ViewModels;
 using BudgetManagement.Services;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Bibliography;

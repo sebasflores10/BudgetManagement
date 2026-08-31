@@ -1,4 +1,4 @@
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.ViewModels
 {
     public class ErrorViewModel
     {

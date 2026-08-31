@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using BudgetManagement.Models.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.ViewModels
 {
     /// <summary>
     /// (Udemy): 113. Formulario de Cuentas [2:50 mins]

@@ -1,4 +1,4 @@
-﻿namespace BudgetManagement.Models
+﻿namespace BudgetManagement.Models.Entities
 {
     /// <summary>
     /// (Udemy): 165. Mostrando las Transacciones de la Base de Datos en el Calendario

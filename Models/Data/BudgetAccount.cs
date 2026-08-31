@@ -1,7 +1,7 @@
 ﻿using BudgetManagement.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.Data
 {
     /// <summary>
     /// (Udemy): 113. Formulario de Cuentas [dbo].[budget_account]

@@ -1,20 +1,20 @@
-﻿using BudgetManagement.Validations;
+﻿using BudgetManagement.Models.Enums;
+using BudgetManagement.Validations;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Emit;
 
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.Data
 {
     /// <summary>
     /// (Udemy): 133. Creando Categorías
     /// </summary>
     public class Category
     {
-        [Range(1, 100, ErrorMessage = "Al menos una categoría es requerida, y el máximo es de {2} categorías")]
         public int category_id { get; set; }
 
         [Required(ErrorMessage = "El nombre de la categoría es requerido")]
-        [StringLength(maximumLength: 150, 
+        [StringLength(maximumLength: 50, 
             ErrorMessage = "El máximo de caracteres es de 50")]
         [Display(Name = "Nombre de la categoría")]
         [FirstCapitalWord]

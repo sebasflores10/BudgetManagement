@@ -1,4 +1,7 @@
-﻿namespace BudgetManagement.Models
+﻿using BudgetManagement.Models.Data;
+using BudgetManagement.Models.Enums;
+
+namespace BudgetManagement.Models.Entities
 {
     /// <summary>
     /// (Udemy): 149. Movimientos de Cuentas

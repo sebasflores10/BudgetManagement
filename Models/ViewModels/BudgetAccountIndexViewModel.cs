@@ -1,4 +1,6 @@
-﻿namespace BudgetManagement.Models
+﻿using BudgetManagement.Models.Data;
+
+namespace BudgetManagement.Models.ViewModels
 {
     /// <summary>
     /// (Udemy): 127. Indice de Cuentas - Query [3:30 mins]

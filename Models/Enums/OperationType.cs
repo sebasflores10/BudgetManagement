@@ -1,4 +1,4 @@
-﻿namespace BudgetManagement.Models
+﻿namespace BudgetManagement.Models.Enums
 {
     /// <summary>
     /// (Udemy): 133. Creando Categorías

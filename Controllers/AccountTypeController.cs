@@ -1,4 +1,4 @@
-﻿using BudgetManagement.Models;
+﻿using BudgetManagement.Models.Data;
 using BudgetManagement.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

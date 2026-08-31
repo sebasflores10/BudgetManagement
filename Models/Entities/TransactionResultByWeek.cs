@@ -1,4 +1,6 @@
-﻿namespace BudgetManagement.Models
+﻿using BudgetManagement.Models.Enums;
+
+namespace BudgetManagement.Models.Entities
 {
     /// <summary>
     /// (Udemy): 156. Reporte Semanal - Query - Group By con DateDiff

@@ -1,4 +1,6 @@
-﻿namespace BudgetManagement.Models
+﻿using BudgetManagement.Models.Enums;
+
+namespace BudgetManagement.Models.Entities
 {
     /// <summary>
     /// (Udemy): 159. Reporte Mensual - Query

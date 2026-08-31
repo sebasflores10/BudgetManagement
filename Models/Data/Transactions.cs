@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BudgetManagement.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
 
-namespace BudgetManagement.Models
+namespace BudgetManagement.Models.Data
 {
     /// <summary>
     /// (Udemy): 138. Creando Transacciones

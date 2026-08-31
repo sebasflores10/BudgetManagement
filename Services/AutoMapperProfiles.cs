@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using BudgetManagement.Models;
+using BudgetManagement.Models.Data;
+using BudgetManagement.Models.ViewModels;
 using Microsoft.Data.SqlClient.Diagnostics;
 
 namespace BudgetManagement.Services

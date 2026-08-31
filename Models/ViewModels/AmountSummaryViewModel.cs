@@ -1,4 +1,4 @@
-﻿namespace BudgetManagement.Models
+﻿namespace BudgetManagement.Models.ViewModels
 {
     /// <summary>
     /// (Udemy): 158. Reporte Semanal - Vista

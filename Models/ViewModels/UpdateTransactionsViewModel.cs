@@ -1,4 +1,4 @@
-﻿namespace BudgetManagement.Models
+﻿namespace BudgetManagement.Models.ViewModels
 {
     /// <summary>
     /// (Udemy): Actualizando Transacciones - Parte 1

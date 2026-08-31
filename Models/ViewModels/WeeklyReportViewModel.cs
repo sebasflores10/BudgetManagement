@@ -1,4 +1,6 @@
-﻿namespace BudgetManagement.Models
+﻿using BudgetManagement.Models.Entities;
+
+namespace BudgetManagement.Models.ViewModels
 {
     /// <summary>
     /// (Udemy): Reporte Semanal - Algoritmo

@@ -1,4 +1,4 @@
-﻿namespace BudgetManagement.Models
+﻿namespace BudgetManagement.Models.Entities
 {
     /// <summary>
     /// (Udemy): 155. Creando un Submenú

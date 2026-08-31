@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BudgetManagement.Models;
+using BudgetManagement.Models.ViewModels;
 using BudgetManagement.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
