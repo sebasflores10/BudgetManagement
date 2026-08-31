@@ -6,18 +6,19 @@ A personal budget management web application built with **ASP.NET Core MVC** and
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Database Schema](#database-schema)
-- [Getting Started](#getting-started)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#️-tech-stack)
+- [Database Schema](#️-database-schema)
+- [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Database Setup](#database-setup)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [API / Controllers](#api--controllers)
-- [Roadmap](#roadmap)
+- [Project Structure](#-project-structure)
+  - [Directory Overview](#-directory-overview)
+- [Usage](#-usage)
+- [API / Controllers](#-api--controllers)
+- [Roadmap](#️-roadmap)
 
 ---
 
@@ -106,7 +107,7 @@ FOREIGN KEYS
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/sebasflores10/BudgetManagement.git
+   git clone https://github.com/sebasflores10/budgetmanagement.git
    ```
 
 2. **Restore dependencies**
@@ -139,37 +140,180 @@ FOREIGN KEYS
 ## 📁 Project Structure
 
 ```
-ManejoPresupuestos/
+BudgetManagement/
+│
 ├── Controllers/
 │   ├── AccountTypeController.cs
-│   ├── AccountController.cs
-│   ├── TransactionController.cs
-│   └── CategoryController.cs
+│   ├── BudgetAccountController.cs
+│   ├── CategoryController.cs
+│   ├── HomeController.cs
+│   ├── TransactionsController.cs
+│   └── UsersController.cs
+│
 ├── Models/
-│   ├── AccountType.cs
-│   ├── Account.cs
-│   ├── Transaction.cs
-│   └── Category.cs
+│   ├── Data/
+│   │   ├── AccountType.cs
+│   │   ├── BudgetAccount.cs
+│   │   ├── Category.cs
+│   │   ├── Transactions.cs
+│   │   └── User.cs
+│   │
+│   ├── Entities/
+│   │   ├── FullCalendarEvent.cs
+│   │   ├── GetTransactionsByBudgetAccount.cs
+│   │   ├── GetUserTransactionsRequest.cs
+│   │   ├── MonthlyResultSQL.cs
+│   │   ├── TransactionsResultByWeek.cs
+│   │   ├── TransactionsDashboard.cs
+│   │   └── TransactionsSubmenu.cs
+│   │
+│   ├── Enums/
+│   │   └── OperationType.cs
+│   │
+│   └── ViewModels/
+│       ├── AmmountSummaryViewModel.cs
+│       ├── BudgetAccountCreateViewModel.cs
+│       ├── BudgetAccountIndexViewModel.cs
+│       ├── ErrorViewModel.cs
+│       ├── ForgotPasswordViewModel.cs
+│       ├── MonthlyReportViewModel.cs
+│       ├── PaginationResponseViewModel.cs
+│       ├── PaginationViewModel.cs
+│       ├── PasswordResetViewModel.cs
+│       ├── RegisterUserViewModel.cs
+│       ├── TransactionsCreateViewModel.cs
+│       ├── UpdateTransactionsViewModel.cs
+│       ├── UserLoginViewModel.cs
+│       └── WeeklyReportViewModel.cs
+│
+├── Properties/
+│   └── launchSettings.json
+│
 ├── Services/
-│   ├── IAccountTypeRepository.cs
-│   └── AccountTypeRepository.cs
+│   ├── AccountTypeRepository.cs
+│   ├── AutoMapperProfiles.cs
+│   ├── BudgetAccountRepository.cs
+│   ├── CalendarRepository.cs
+│   ├── CategoryRepository.cs
+│   ├── ForgotPassword.cs
+│   ├── ReportService.cs
+│   ├── TransactionsRepository.cs
+│   ├── TranslateIdentityErrorsToSpanish.cs
+│   ├── UserRepository.cs
+│   ├── UserService.cs
+│   └── UserStore.cs
+│
+├── Validations/
+│   └── FirstCapitalWordAttrubute.cs
+│
 ├── Views/
 │   ├── AccountType/
+│   │   ├── CreateAccountType.cshtml
+│   │   ├── DeleteAccountType.cshtml
+│   │   ├── EditAccountType.cshtml
+│   │   └── Index.cshtml
+│   │
+│   ├── BudgetAccount/
+│   │   ├── BudgetAccountDashboard.cshtml
+│   │   ├── CreateBudgetAccount.cshtml
+│   │   ├── DeleteBudgetAccount.cshtml
+│   │   ├── EditBudgetAccount.cshtml
 │   │   ├── Index.cshtml
-│   │   ├── Create.cshtml
-│   │   └── Edit.cshtml
-│   └── Shared/
-│       └── _Layout.cshtml
+│   │   └── Index.cshtml.css
+│   │
+│   ├── Category/
+│   │   ├── CreateCategory.cshtml
+│   │   ├── DeleteCategory.cshtml
+│   │   ├── EditCategory.cshtml
+│   │   └── Index.cshtml
+│   │
+│   ├── Home/
+│   │   ├── Index.cshtml
+│   │   ├── NotFound.cshtml
+│   │   └── Privacy.cshtml
+│   │
+│   ├── Shared/
+│   │   ├── _AmmountSummary.cshtml
+│   │   ├── _DetailedTransactionsReport.cshtml
+│   │   ├── _Layout.cshtml
+│   │   ├── _Layout.cshtml.css
+│   │   ├── _LinksUserLogin.cshtml
+│   │   ├── _MonthNav.cshtml
+│   │   ├── _Pagination.cshtml
+│   │   ├── _ValidationScriptsPartial.cshtml
+│   │   └── _Error.cshtml
+│   │
+│   ├── Transactions/
+│   │   ├── _Submenu.cshtml
+│   │   ├── Calendar.cshtml
+│   │   ├── CreateTransaction.cshtml
+│   │   ├── DeleteTransaction.cshtml
+│   │   ├── ExcelReport.cshtml
+│   │   ├── Index.cshtml
+│   │   ├── Monthly.cshtml
+│   │   ├── UpdateTransaction.cshtml
+│   │   └── Weekly.cshtml
+│   │
+│   ├── Users/
+│   │   ├── _Layout.cshtml
+│   │   ├── ForgotPassword.cshtml
+│   │   ├── PasswordChange.cshtml
+│   │   ├── RegisterUser.cshtml
+│   │   ├── ResetPassword.cshtml
+│   │   └── UserLogin.cshtml
+│   │
+│   ├── _ViewImports.cshtml
+│   └── _ViewStart.cshtml
+│
 ├── wwwroot/
 │   ├── css/
-│   └── js/
-├── Database/
-│   ├── 01_CreateTables.sql
-│   └── 02_StoredProcedures.sql
+│   │   ├── custom.css
+│   │   └── site.css
+│   │
+│   ├── js/
+│   │   ├── site.js
+│   │   └── TransactionsForms.js
+│   │
+│   ├── lib/
+│   │   ├── bootstrap/
+│   │   ├── fullcalendar-7.0.2/
+│   │   ├── jquery/
+│   │   ├── jquery-ui-1.14.2/
+│   │   ├── jquery-validation/
+│   │   └── jquery-validation-unobstrusive/
+│   │
+│   └── favicon.ico
+│
+├── .dockerignore
+├── .gitignore
+├── BudgetManagement.csproj
+├── BudgetManagement.slnx
+├── Dockerfile
+├── Program.cs
+├── README.md
+├── appsettings.Development.json
 ├── appsettings.json
-└── Program.cs
+└── libman.json
 ```
+---
 
+### 📂 Directory Overview
+
+| Directory            | Description                                                                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Controllers/`       | Contains MVC controllers responsible for handling HTTP requests, application flow, and communication between the views and application services.          |
+| `Models/Data/`       | Contains the primary data models representing the application's core objects, such as users, accounts, categories, and transactions.                      |
+| `Models/Entities/`   | Contains specialized entities and data structures used for reports, database queries, dashboards, calendars, and other application features.              |
+| `Models/Enums/`      | Contains enumerations used throughout the application.                                                                                                    |
+| `Models/ViewModels/` | Contains ViewModels designed specifically to transfer data between controllers and Razor views.                                                           |
+| `Properties/`        | Contains development and application launch configuration.                                                                                                |
+| `Services/`          | Contains repositories and application services responsible for data access, business logic, user management, reporting, and other reusable functionality. |
+| `Validations/`       | Contains custom validation attributes and validation-related functionality.                                                                               |
+| `Views/`             | Contains the Razor `.cshtml` files responsible for rendering the application's user interface.                                                            |
+| `wwwroot/`           | Contains static client-side resources such as CSS, JavaScript, third-party libraries, and the application favicon.                                        |
+
+
+---
 ---
 
 ## 📖 Usage
