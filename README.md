@@ -28,6 +28,18 @@ BudgetManagement is a full-stack budget tracking application that allows users t
 
 ---
 
+## 🎬 Application Preview
+
+Here's a quick demonstration of the BudgetManagement application and its main functionalities.
+
+<div align="center">
+    <img src="docs/BudgetManagementGIF.gif"
+         alt="BudgetManagement Application Demo"
+         width="900"/>
+</div>
+
+---
+
 ## ✨ Features
 
 - 🗂️ **Account Types** — Group accounts by category (e.g. loans, credit cards, cash)
