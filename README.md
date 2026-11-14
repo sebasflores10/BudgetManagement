@@ -7,6 +7,7 @@ A personal budget management web application built with **ASP.NET Core MVC** and
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
+- [Application Preview](#-application-preview)
 - [Features](#-features)
 - [Tech Stack](#️-tech-stack)
 - [Database Schema](#️-database-schema)
